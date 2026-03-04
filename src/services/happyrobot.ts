@@ -1,19 +1,27 @@
+import { Campaign, TriggerPayload } from '../types/index.js';
 import { env } from '../config/env.js';
-import { HappyRobotPayload } from '../types/index.js';
 
-/** Trigger an outbound call via HappyRobot webhook */
-export async function triggerOutboundCall(
-  payload: HappyRobotPayload,
+/** Trigger a campaign's HappyRobot workflow */
+export async function triggerCampaign(
+  campaign: Campaign,
 ): Promise<{ ok: boolean; status: number; body: unknown }> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
 
-  if (env.happyRobotApiKey) {
-    headers['Authorization'] = `Bearer ${env.happyRobotApiKey}`;
+  if (campaign.apiKey) {
+    headers['Authorization'] = `Bearer ${campaign.apiKey}`;
   }
 
-  const response = await fetch(env.happyRobotWebhookUrl, {
+  const payload: TriggerPayload = {
+    campaign_id: campaign.id,
+    campaign_name: campaign.name,
+    triggered_at: new Date().toISOString(),
+    callback_url: `${env.baseUrl}/api/callbacks/${campaign.id}`,
+    max_retries: campaign.maxRetries,
+  };
+
+  const response = await fetch(campaign.webhookUrl, {
     method: 'POST',
     headers,
     body: JSON.stringify(payload),
@@ -22,10 +30,9 @@ export async function triggerOutboundCall(
   const body = await response.json().catch(() => null);
 
   if (!response.ok) {
-    console.error(
-      `HappyRobot webhook failed: ${response.status}`,
-      body,
-    );
+    console.error(`[${campaign.id}] Webhook failed: ${response.status}`, body);
+  } else {
+    console.log(`[${campaign.id}] Webhook triggered successfully`);
   }
 
   return { ok: response.ok, status: response.status, body };

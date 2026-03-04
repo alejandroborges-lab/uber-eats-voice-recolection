@@ -1,12 +1,18 @@
 import { Router, Request, Response } from 'express';
 import { env } from '../config/env.js';
-import { updateCallResult } from '../services/google-sheets.js';
 import { CallbackPayload } from '../types/index.js';
+import { addLog } from '../services/callback-store.js';
 
 export const callbackRouter = Router();
 
-callbackRouter.post('/call-result', async (req: Request, res: Response) => {
-  // Validate callback secret if configured
+/**
+ * Generic callback endpoint: POST /api/callbacks/:campaignId
+ *
+ * HappyRobot workflows send call results here after each call.
+ * The backend logs them for observability. All contact state
+ * (retry count, status) is managed in HappyRobot + Google Sheets.
+ */
+callbackRouter.post('/:campaignId', async (req: Request, res: Response) => {
   if (env.callbackSecret) {
     const secret = req.headers['x-callback-secret'];
     if (secret !== env.callbackSecret) {
@@ -15,6 +21,7 @@ callbackRouter.post('/call-result', async (req: Request, res: Response) => {
     }
   }
 
+  const campaignId = req.params.campaignId as string;
   const payload = req.body as CallbackPayload;
 
   if (!payload.phone_number || !payload.call_status) {
@@ -23,20 +30,18 @@ callbackRouter.post('/call-result', async (req: Request, res: Response) => {
   }
 
   console.log(
-    `Callback received: ${payload.phone_number} - status=${payload.call_status}, docs_confirmed=${payload.documentation_confirmed}`,
+    `[${campaignId}] Callback: ${payload.phone_number} — ` +
+    `status=${payload.call_status}, docs=${payload.documentation_confirmed ?? 'N/A'}`,
   );
 
-  try {
-    await updateCallResult(
-      payload.phone_number,
-      payload.call_status,
-      payload.documentation_confirmed ?? false,
-      payload.call_summary ?? '',
-    );
+  addLog({
+    campaign_id: campaignId,
+    phone_number: payload.phone_number,
+    call_status: payload.call_status,
+    documentation_confirmed: payload.documentation_confirmed ?? false,
+    call_summary: payload.call_summary ?? '',
+    received_at: new Date().toISOString(),
+  });
 
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Failed to process callback:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+  res.json({ success: true });
 });

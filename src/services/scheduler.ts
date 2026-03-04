@@ -1,80 +1,60 @@
 import cron from 'node-cron';
-import { env } from '../config/env.js';
-import { getEligibleContacts, markCallTriggered } from './google-sheets.js';
-import { triggerOutboundCall } from './happyrobot.js';
-import { HappyRobotPayload } from '../types/index.js';
+import { getActiveCampaigns } from '../config/campaigns.js';
+import { triggerCampaign } from './happyrobot.js';
+import { Campaign } from '../types/index.js';
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+/** Trigger a single campaign */
+async function runCampaign(campaign: Campaign): Promise<void> {
+  console.log(
+    `[${new Date().toISOString()}] [${campaign.id}] Cron fired — triggering workflow`,
+  );
+
+  try {
+    await triggerCampaign(campaign);
+  } catch (error) {
+    console.error(`[${campaign.id}] Failed to trigger:`, error);
+  }
 }
 
-/** Process all eligible contacts: trigger outbound calls via HappyRobot */
-export async function processCallBatch(): Promise<void> {
-  console.log(`[${new Date().toISOString()}] Starting call batch...`);
+/** Register all cron jobs for all active campaigns */
+export function startScheduler(): void {
+  const activeCampaigns = getActiveCampaigns();
 
-  const contacts = await getEligibleContacts();
-  console.log(`Found ${contacts.length} eligible contacts`);
+  if (activeCampaigns.length === 0) {
+    console.warn('No active campaigns found. Scheduler idle.');
+    return;
+  }
 
-  if (contacts.length === 0) return;
-
-  for (const contact of contacts) {
-    const { data, rowIndex } = contact;
-    const newAttemptCount = data.attempt_count + 1;
-
-    const payload: HappyRobotPayload = {
-      phone_number: data.phone_number,
-      merchant_name: data.merchant_name,
-      contact_name: data.contact_name,
-      razon_social: data.razon_social,
-      pending_documents: data.pending_documents,
-      attempt_number: newAttemptCount,
-      callback_url: `${env.baseUrl}/api/callbacks/call-result`,
-    };
-
-    console.log(
-      `Triggering call to ${data.contact_name} (${data.phone_number}) - attempt #${newAttemptCount}`,
-    );
-
-    const result = await triggerOutboundCall(payload);
-
-    if (result.ok) {
-      await markCallTriggered(rowIndex, newAttemptCount);
-      console.log(`  -> Call triggered successfully`);
-    } else {
-      console.error(
-        `  -> Failed to trigger call: ${result.status}`,
-        result.body,
+  for (const campaign of activeCampaigns) {
+    for (const cronExpr of campaign.cronSchedules) {
+      cron.schedule(
+        cronExpr,
+        () => { runCampaign(campaign).catch(console.error); },
+        { timezone: campaign.timezone },
       );
-    }
 
-    // Rate limiting: wait between calls to respect HappyRobot concurrency
-    if (contacts.indexOf(contact) < contacts.length - 1) {
-      await sleep(env.callDelaySeconds * 1000);
+      console.log(
+        `  Scheduled "${campaign.name}" — cron: ${cronExpr} (${campaign.timezone})`,
+      );
     }
   }
 
-  console.log(`[${new Date().toISOString()}] Call batch complete.`);
+  console.log(
+    `Scheduler started: ${activeCampaigns.length} campaign(s), ` +
+    `${activeCampaigns.reduce((n, c) => n + c.cronSchedules.length, 0)} cron job(s)`,
+  );
 }
 
-/** Register cron jobs for call scheduling */
-export function startScheduler(): void {
-  const tz = env.callTimezone;
+/** Manually trigger a campaign (for testing) */
+export async function triggerCampaignManually(
+  campaignId: string,
+): Promise<{ ok: boolean; message: string }> {
+  const campaign = getActiveCampaigns().find((c) => c.id === campaignId);
 
-  // 11:30 every day
-  cron.schedule('30 11 * * *', () => {
-    processCallBatch().catch(console.error);
-  }, { timezone: tz });
+  if (!campaign) {
+    return { ok: false, message: `Campaign "${campaignId}" not found or not active` };
+  }
 
-  // 18:30 every day
-  cron.schedule('30 18 * * *', () => {
-    processCallBatch().catch(console.error);
-  }, { timezone: tz });
-
-  // 19:00 every day
-  cron.schedule('0 19 * * *', () => {
-    processCallBatch().catch(console.error);
-  }, { timezone: tz });
-
-  console.log(`Scheduler started with timezone: ${tz}`);
-  console.log('Cron jobs: 11:30, 18:30, 19:00');
+  runCampaign(campaign).catch(console.error);
+  return { ok: true, message: `Campaign "${campaign.name}" triggered` };
 }

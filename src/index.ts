@@ -1,21 +1,45 @@
 import express from 'express';
 import { env } from './config/env.js';
 import { callbackRouter } from './routes/callbacks.js';
-import { startScheduler, processCallBatch } from './services/scheduler.js';
+import { startScheduler, triggerCampaignManually } from './services/scheduler.js';
+import { getActiveCampaigns } from './config/campaigns.js';
+import { getLogs, getStats } from './services/callback-store.js';
 
 const app = express();
 app.use(express.json());
 
-// Health check
+// ─── Health & Dashboard ────────────────────────────────────────────
+
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    campaigns: getActiveCampaigns().map((c) => ({
+      id: c.id,
+      name: c.name,
+      schedules: c.cronSchedules,
+      timezone: c.timezone,
+    })),
+  });
 });
 
-// Callback routes (HappyRobot sends results here)
+app.get('/api/stats', (_req, res) => {
+  res.json(getStats());
+});
+
+app.get('/api/logs', (req, res) => {
+  const campaignId = req.query.campaign_id as string | undefined;
+  const limit = Number(req.query.limit ?? 50);
+  res.json(getLogs(campaignId, limit));
+});
+
+// ─── Callbacks (HappyRobot → Backend) ─────────────────────────────
+
 app.use('/api/callbacks', callbackRouter);
 
-// Manual trigger for testing (protected by callback secret)
-app.post('/api/test/trigger-now', async (req, res) => {
+// ─── Manual Trigger (for testing) ─────────────────────────────────
+
+app.post('/api/trigger/:campaignId', async (req, res) => {
   if (env.callbackSecret) {
     const secret = req.headers['x-callback-secret'];
     if (secret !== env.callbackSecret) {
@@ -24,12 +48,14 @@ app.post('/api/test/trigger-now', async (req, res) => {
     }
   }
 
-  console.log('Manual trigger requested');
-  processCallBatch().catch(console.error);
-  res.json({ message: 'Call batch triggered' });
+  const result = await triggerCampaignManually(req.params.campaignId);
+  res.status(result.ok ? 200 : 404).json(result);
 });
+
+// ─── Start ─────────────────────────────────────────────────────────
 
 app.listen(env.port, () => {
   console.log(`Server running on port ${env.port}`);
+  console.log(`Base URL: ${env.baseUrl}`);
   startScheduler();
 });
