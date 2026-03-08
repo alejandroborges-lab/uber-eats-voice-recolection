@@ -32,22 +32,33 @@ dispatchRouter.post('/:campaignId', async (req: Request, res: Response) => {
 
   const payload = req.body as DispatchPayload;
 
-  if (!payload.rows || !Array.isArray(payload.rows)) {
+  // HappyRobot may send rows as a JSON string instead of an array — handle both
+  let rows = payload.rows;
+  if (typeof rows === 'string') {
+    try {
+      rows = JSON.parse(rows);
+    } catch {
+      res.status(400).json({ error: 'Invalid "rows" JSON string' });
+      return;
+    }
+  }
+
+  if (!rows || !Array.isArray(rows)) {
     res.status(400).json({ error: 'Missing or invalid "rows" array' });
     return;
   }
 
-  console.log(`[${campaignId}] Dispatch received: ${payload.rows.length} rows`);
+  console.log(`[${campaignId}] Dispatch received: ${rows.length} rows`);
 
   // Respond immediately — fan-out runs in background
   res.json({
     success: true,
-    message: `Dispatch accepted: ${payload.rows.length} merchants queued`,
-    total_rows: payload.rows.length,
+    message: `Dispatch accepted: ${rows.length} merchants queued`,
+    total_rows: rows.length,
   });
 
   // Fire-and-forget
-  fanOutCallers(campaign, payload.rows).catch((error) => {
+  fanOutCallers(campaign, rows).catch((error) => {
     console.error(`[${campaignId}] Fan-out error:`, error);
   });
 });
