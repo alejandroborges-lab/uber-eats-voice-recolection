@@ -1,12 +1,14 @@
 import express from 'express';
 import { env } from './config/env.js';
 import { callbackRouter } from './routes/callbacks.js';
-import { startScheduler, triggerCampaignManually } from './services/scheduler.js';
+import { dispatchRouter } from './routes/dispatch.js';
+import { startScheduler, triggerCampaignManually, triggerLegacyManually } from './services/scheduler.js';
 import { getActiveCampaigns } from './config/campaigns.js';
 import { getLogs, getStats } from './services/callback-store.js';
+import { getDispatchLogs } from './services/dispatch.js';
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
 
 // ─── Health & Dashboard ────────────────────────────────────────────
 
@@ -33,11 +35,21 @@ app.get('/api/logs', (req, res) => {
   res.json(getLogs(campaignId, limit));
 });
 
-// ─── Callbacks (HappyRobot → Backend) ─────────────────────────────
+app.get('/api/dispatch-logs', (req, res) => {
+  const campaignId = req.query.campaign_id as string | undefined;
+  const limit = Number(req.query.limit ?? 20);
+  res.json(getDispatchLogs(campaignId, limit));
+});
+
+// ─── Dispatch (HappyRobot Dispatcher → Backend) ──────────────────
+
+app.use('/api/dispatch', dispatchRouter);
+
+// ─── Callbacks (HappyRobot Caller → Backend) ─────────────────────
 
 app.use('/api/callbacks', callbackRouter);
 
-// ─── Manual Trigger (for testing) ─────────────────────────────────
+// ─── Manual Trigger — Dispatcher/Caller (default) ────────────────
 
 app.post('/api/trigger/:campaignId', async (req, res) => {
   if (env.callbackSecret) {
@@ -49,6 +61,21 @@ app.post('/api/trigger/:campaignId', async (req, res) => {
   }
 
   const result = await triggerCampaignManually(req.params.campaignId);
+  res.status(result.ok ? 200 : 404).json(result);
+});
+
+// ─── Manual Trigger — Legacy single-workflow with Loop ───────────
+
+app.post('/api/trigger-legacy/:campaignId', async (req, res) => {
+  if (env.callbackSecret) {
+    const secret = req.headers['x-callback-secret'];
+    if (secret !== env.callbackSecret) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+  }
+
+  const result = await triggerLegacyManually(req.params.campaignId);
   res.status(result.ok ? 200 : 404).json(result);
 });
 

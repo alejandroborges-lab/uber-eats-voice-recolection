@@ -1,18 +1,18 @@
 import cron from 'node-cron';
 import { getActiveCampaigns } from '../config/campaigns.js';
-import { triggerCampaign } from './happyrobot.js';
+import { triggerDispatcher, triggerCampaign } from './happyrobot.js';
 import { Campaign } from '../types/index.js';
 
-/** Trigger a single campaign */
+/** Trigger a single campaign's dispatcher workflow */
 async function runCampaign(campaign: Campaign): Promise<void> {
   console.log(
-    `[${new Date().toISOString()}] [${campaign.id}] Cron fired — triggering workflow`,
+    `[${new Date().toISOString()}] [${campaign.id}] Cron fired — triggering dispatcher`,
   );
 
   try {
-    await triggerCampaign(campaign);
+    await triggerDispatcher(campaign);
   } catch (error) {
-    console.error(`[${campaign.id}] Failed to trigger:`, error);
+    console.error(`[${campaign.id}] Failed to trigger dispatcher:`, error);
   }
 }
 
@@ -45,7 +45,7 @@ export function startScheduler(): void {
   );
 }
 
-/** Manually trigger a campaign (for testing) */
+/** Manually trigger a campaign's dispatcher (for testing) */
 export async function triggerCampaignManually(
   campaignId: string,
 ): Promise<{ ok: boolean; message: string }> {
@@ -56,5 +56,24 @@ export async function triggerCampaignManually(
   }
 
   runCampaign(campaign).catch(console.error);
-  return { ok: true, message: `Campaign "${campaign.name}" triggered` };
+  return { ok: true, message: `Campaign "${campaign.name}" dispatcher triggered` };
+}
+
+/** Manually trigger via legacy single-workflow with Loop (for testing) */
+export async function triggerLegacyManually(
+  campaignId: string,
+): Promise<{ ok: boolean; message: string }> {
+  const campaigns = getActiveCampaigns();
+  const campaign = campaigns.find((c) => c.id === campaignId);
+
+  if (!campaign) {
+    return { ok: false, message: `Campaign "${campaignId}" not found or not active` };
+  }
+
+  if (!campaign.webhookUrl) {
+    return { ok: false, message: `Campaign "${campaignId}" has no legacy webhookUrl` };
+  }
+
+  triggerCampaign(campaign).catch(console.error);
+  return { ok: true, message: `Campaign "${campaign.name}" legacy workflow triggered` };
 }

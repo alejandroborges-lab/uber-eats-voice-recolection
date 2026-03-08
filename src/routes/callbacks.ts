@@ -29,18 +29,26 @@ callbackRouter.post('/:campaignId', async (req: Request, res: Response) => {
     return;
   }
 
+  const objective = payload.active_objective ?? '';
+  const completed = payload.objective_completed ?? payload.documentation_confirmed ?? false;
+
   console.log(
     `[${campaignId}] Callback: ${payload.phone_number} — ` +
-    `status=${payload.call_status}, docs=${payload.documentation_confirmed ?? 'N/A'}`,
+    `status=${payload.call_status}, objective=${objective}, completed=${completed}`,
   );
 
   addLog({
     campaign_id: campaignId,
     phone_number: payload.phone_number,
     call_status: payload.call_status,
-    documentation_confirmed: payload.documentation_confirmed ?? false,
+    call_connected: payload.call_connected ?? false,
+    objective_completed: completed,
+    needs_escalation: payload.needs_escalation ?? false,
     call_summary: payload.call_summary ?? '',
     received_at: new Date().toISOString(),
+    merchant_uuid: payload.merchant_uuid ?? '',
+    funnel_stage: payload.funnel_stage ?? '',
+    active_objective: objective,
   });
 
   res.json({ success: true });
