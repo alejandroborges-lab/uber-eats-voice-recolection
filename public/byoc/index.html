@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BYOC Voice Agent — Test</title>
+  <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo3vlJKNoIRF7FbTxOmO3qb00UI2tpu25q8w&s" type="image/png">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafafa; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
@@ -58,10 +59,10 @@
       </div>
 
       <div class="field field-lang">
-        <label>Language</label>
-        <select name="language">
-          <option value="ES">Spanish (ES)</option>
-          <option value="EN">English (EN)</option>
+        <label>Preferred language</label>
+        <select name="preferred_language">
+          <option value="es">Spanish (es)</option>
+          <option value="en">English (en)</option>
         </select>
       </div>
 
@@ -115,6 +116,46 @@
         <div class="field">
           <label>Input data</label>
           <input type="text" name="input_data" value="Test merchant">
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>L30D orders</label>
+            <input type="text" name="L30D_orders" value="320">
+          </div>
+          <div class="field">
+            <label>L30D OT coverage</label>
+            <input type="text" name="L30D_ot_coverage" value="12">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Merchant size tier</label>
+            <input type="text" name="merchant_size_tier" value="Large">
+          </div>
+          <div class="field">
+            <label>Merchant OT tier</label>
+            <input type="text" name="merchant_ot_tier" value="Dabblers">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Ads credit reward</label>
+            <input type="text" name="ads_credit_reward" value="80">
+          </div>
+          <div class="field">
+            <label>Orders for 90 pct</label>
+            <input type="text" name="orders_for_90_pct" value="288">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>CNFE cancellations</label>
+            <input type="text" name="cnfe_cancellations" value="5">
+          </div>
+          <div class="field">
+            <label>NRO chargebacks</label>
+            <input type="text" name="nro_chargebacks" value="3">
+          </div>
         </div>
       </div>
 

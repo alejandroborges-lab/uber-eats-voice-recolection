@@ -24,13 +24,21 @@ testByocRouter.post('/', async (req: Request, res: Response) => {
     contact_name: body.contact_name || 'Test User',
     phone_number: body.phone_number,
     city_name: body.city_name || 'Madrid',
-    language: body.language || 'ES',
+    preferred_language: body.preferred_language || 'es',
     fulfillment_type: body.fulfillment_type || 'self_delivery',
     cancellation_rate: body.cancellation_rate || '4.2',
     L7D_onboarded_couriers: body.L7D_onboarded_couriers || '0',
     L7D_ot_share: body.L7D_ot_share || '15.3',
     L7D_byoc_orders: body.L7D_byoc_orders || '87',
     input_data: body.input_data || 'Test merchant',
+    L30D_orders: body.L30D_orders || '320',
+    L30D_ot_coverage: body.L30D_ot_coverage || '12',
+    merchant_size_tier: body.merchant_size_tier || 'Large',
+    merchant_ot_tier: body.merchant_ot_tier || 'Dabblers',
+    ads_credit_reward: body.ads_credit_reward || '80',
+    orders_for_90_pct: body.orders_for_90_pct || '288',
+    cnfe_cancellations: body.cnfe_cancellations || '5',
+    nro_chargebacks: body.nro_chargebacks || '3',
   };
 
   try {
