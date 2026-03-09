@@ -1,7 +1,9 @@
 import express from 'express';
+import path from 'path';
 import { env } from './config/env.js';
 import { callbackRouter } from './routes/callbacks.js';
 import { dispatchRouter } from './routes/dispatch.js';
+import { testCallRouter } from './routes/test-call.js';
 import { startScheduler, triggerCampaignManually, triggerLegacyManually } from './services/scheduler.js';
 import { getActiveCampaigns } from './config/campaigns.js';
 import { getLogs, getStats } from './services/callback-store.js';
@@ -9,6 +11,11 @@ import { getDispatchLogs } from './services/dispatch.js';
 
 const app = express();
 app.use(express.json({ limit: '5mb' }));
+
+// ─── Testing UI ───────────────────────────────────────────────────
+
+app.use('/test', express.static(path.join(process.cwd(), 'public')));
+app.use('/api/test-call', testCallRouter);
 
 // ─── Health & Dashboard ────────────────────────────────────────────
 

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uber Eats Voice Agent — Test</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafafa; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    .header { display: flex; align-items: center; gap: 16px; padding: 24px 0 8px; }
+    .header img { height: 36px; border-radius: 8px; }
+    .header span { font-size: 14px; color: #999; }
+    h1 { font-size: 22px; font-weight: 600; margin: 8px 0 4px; text-align: center; }
+    .subtitle { font-size: 14px; color: #666; margin-bottom: 24px; text-align: center; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 28px; width: 100%; max-width: 480px; margin: 0 16px; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: border-color 0.2s; }
+    .field input:focus, .field select:focus { outline: none; border-color: #06C167; }
+    .field-phone input { font-size: 18px; font-weight: 600; padding: 14px 12px; border-color: #06C167; background: #f0fdf4; }
+    .field-objective select { font-size: 15px; font-weight: 600; background: #fff; }
+    .divider { border: none; border-top: 1px solid #eee; margin: 20px 0; }
+    .toggle-advanced { font-size: 13px; color: #06C167; cursor: pointer; text-align: center; margin-bottom: 16px; user-select: none; }
+    .toggle-advanced:hover { text-decoration: underline; }
+    .advanced { display: none; }
+    .advanced.show { display: block; }
+    .btn { width: 100%; padding: 14px; background: #06C167; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #05a558; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-loading { position: relative; }
+    .btn-loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; margin-left: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .result { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 14px; text-align: center; display: none; }
+    .result.success { display: block; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .result.error { display: block; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .footer { padding: 24px; font-size: 12px; color: #aaa; text-align: center; }
+    .row { display: flex; gap: 12px; }
+    .row .field { flex: 1; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo3vlJKNoIRF7FbTxOmO3qb00UI2tpu25q8w&s" alt="Uber Eats">
+    <span>&times;</span>
+    <img src="https://media.licdn.com/dms/image/v2/D4E0BAQHA7jbVAxkZXQ/company-logo_200_200/B4EZgXYt9RHIAI-/0/1752739012753/happyrobot_logo?e=1774483200&v=beta&t=aPyx0L03tv9PdnlCOvdjJhnGilzrzoPqBGPG3k9i_Xk" alt="HappyRobot">
+  </div>
+
+  <h1>Voice Agent Testing</h1>
+  <p class="subtitle">Pon tu numero y recibe una llamada del agente Lucas</p>
+
+  <div class="card">
+    <form id="callForm">
+
+      <div class="field field-phone">
+        <label>Tu numero de telefono</label>
+        <input type="tel" name="contact_phone" value="+34669895417" required>
+      </div>
+
+      <div class="field field-objective">
+        <label>Caso de uso</label>
+        <select name="active_objective">
+          <option value="Docs">Docs — Recoger documentacion</option>
+          <option value="Firma">Firma — Firma de contrato</option>
+          <option value="Tablet">Tablet — Activacion de tablet</option>
+          <option value="ROR">ROR — Mejorar ratio online</option>
+        </select>
+      </div>
+
+      <hr class="divider">
+
+      <div class="row">
+        <div class="field">
+          <label>Nombre contacto</label>
+          <input type="text" name="contact_name" value="Maria Garcia">
+        </div>
+        <div class="field">
+          <label>Restaurante</label>
+          <input type="text" name="merchant_name" value="Restaurante El Buen Sabor">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Nombre AE</label>
+          <input type="text" name="ae_name" value="Alex">
+        </div>
+        <div class="field">
+          <label>Email AE</label>
+          <input type="text" name="ae_email" value="alex@uber.com">
+        </div>
+      </div>
+
+      <div class="toggle-advanced" onclick="document.querySelector('.advanced').classList.toggle('show')">
+        Campos avanzados ▾
+      </div>
+
+      <div class="advanced">
+        <div class="row">
+          <div class="field">
+            <label>Merchant UUID</label>
+            <input type="text" name="merchant_uuid" value="uuid-test-001">
+          </div>
+          <div class="field">
+            <label>Pais</label>
+            <input type="text" name="country" value="ES">
+          </div>
+        </div>
+        <div class="field">
+          <label>Telefono AE</label>
+          <input type="text" name="ae_phone" value="661661661">
+        </div>
+        <div class="field">
+          <label>Docs pendientes</label>
+          <input type="text" name="pending_documents" value="DNI, menu con horario">
+        </div>
+        <div class="field">
+          <label>ROR actual (%)</label>
+          <input type="text" name="current_ror" value="60">
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Email tablet</label>
+            <input type="text" name="tablet_credentials_email" value="test@uber.com">
+          </div>
+          <div class="field">
+            <label>Password tablet</label>
+            <input type="text" name="tablet_credentials_password" value="1234">
+          </div>
+        </div>
+        <div class="field">
+          <label>Razon social</label>
+          <input type="text" name="razon_social" value="Test SL">
+        </div>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">Recibir llamada</button>
+
+      <div class="result" id="result"></div>
+    </form>
+  </div>
+
+  <div class="footer">Uber Eats Onboarding &mdash; Internal Testing Tool</div>
+
+  <script>
+    const form = document.getElementById('callForm');
+    const btn = document.getElementById('submitBtn');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.classList.add('btn-loading');
+      btn.textContent = 'Llamando...';
+      result.className = 'result';
+      result.style.display = 'none';
+
+      const data = Object.fromEntries(new FormData(form));
+
+      try {
+        const res = await fetch('/api/test-call', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+
+        if (res.ok) {
+          result.className = 'result success';
+          result.textContent = 'Llamada en camino. Recibiras una llamada en unos segundos.';
+        } else {
+          result.className = 'result error';
+          result.textContent = json.error || 'Error al iniciar la llamada';
+        }
+      } catch (err) {
+        result.className = 'result error';
+        result.textContent = 'Error de conexion con el servidor';
+      }
+
+      btn.disabled = false;
+      btn.classList.remove('btn-loading');
+      btn.textContent = 'Recibir llamada';
+    });
+  </script>
+
+</body>
+</html>
