@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Uber Eats Voice Agent — Test</title>
+  <title>BYOC Voice Agent — Test</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafafa; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
@@ -18,7 +18,7 @@
     .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: border-color 0.2s; }
     .field input:focus, .field select:focus { outline: none; border-color: #06C167; }
     .field-phone input { font-size: 18px; font-weight: 600; padding: 14px 12px; border-color: #06C167; background: #f0fdf4; }
-    .field-objective select { font-size: 15px; font-weight: 600; background: #fff; }
+    .field-lang select { font-size: 15px; font-weight: 600; background: #fff; }
     .divider { border: none; border-top: 1px solid #eee; margin: 20px 0; }
     .toggle-advanced { font-size: 13px; color: #06C167; cursor: pointer; text-align: center; margin-bottom: 16px; user-select: none; }
     .toggle-advanced:hover { text-decoration: underline; }
@@ -46,24 +46,22 @@
     <img src="https://media.licdn.com/dms/image/v2/D4E0BAQHA7jbVAxkZXQ/company-logo_200_200/B4EZgXYt9RHIAI-/0/1752739012753/happyrobot_logo?e=1774483200&v=beta&t=aPyx0L03tv9PdnlCOvdjJhnGilzrzoPqBGPG3k9i_Xk" alt="HappyRobot">
   </div>
 
-  <h1>Onboarding Challenge</h1>
-  <p class="subtitle">Pon tu numero y recibe una llamada del agente Lucas</p>
+  <h1>Bring Your Own Courier</h1>
+  <p class="subtitle">Enter your phone number and receive a test call from the BYOC agent</p>
 
   <div class="card">
     <form id="callForm">
 
       <div class="field field-phone">
-        <label>Tu numero de telefono</label>
-        <input type="tel" name="contact_phone" value="+34666777888" required>
+        <label>Your phone number</label>
+        <input type="tel" name="phone_number" value="+34666777888" required>
       </div>
 
-      <div class="field field-objective">
-        <label>Caso de uso</label>
-        <select name="active_objective">
-          <option value="Docs">Docs — Recoger documentacion</option>
-          <option value="Firma">Firma — Firma de contrato</option>
-          <option value="Tablet">Tablet — Activacion de tablet</option>
-          <option value="ROR">ROR — Mejorar ratio online</option>
+      <div class="field field-lang">
+        <label>Language</label>
+        <select name="language">
+          <option value="ES">Spanish (ES)</option>
+          <option value="EN">English (EN)</option>
         </select>
       </div>
 
@@ -71,72 +69,62 @@
 
       <div class="row">
         <div class="field">
-          <label>Nombre contacto</label>
-          <input type="text" name="contact_name" value="María García">
+          <label>Contact name</label>
+          <input type="text" name="contact_name" value="Carlos">
         </div>
         <div class="field">
-          <label>Restaurante</label>
-          <input type="text" name="merchant_name" value="Restaurante El Buen Sabor">
+          <label>Restaurant name</label>
+          <input type="text" name="restaurant_name" value="Restaurante El Buen Sabor">
         </div>
       </div>
 
-      <div class="row">
-        <div class="field">
-          <label>Nombre AE</label>
-          <input type="text" name="ae_name" value="Alex">
-        </div>
-        <div class="field">
-          <label>Email AE</label>
-          <input type="text" name="ae_email" value="alex@uber.com">
-        </div>
+      <div class="field">
+        <label>City name</label>
+        <input type="text" name="city_name" value="Madrid">
       </div>
 
       <div class="toggle-advanced" onclick="document.querySelector('.advanced').classList.toggle('show')">
-        Campos avanzados ▾
+        Advanced fields ▾
       </div>
 
       <div class="advanced">
-        <div class="row">
-          <div class="field">
-            <label>Merchant UUID</label>
-            <input type="text" name="merchant_uuid" value="uuid-test-001">
-          </div>
-          <div class="field">
-            <label>Pais</label>
-            <input type="text" name="country" value="ES">
-          </div>
-        </div>
         <div class="field">
-          <label>Telefono AE</label>
-          <input type="text" name="ae_phone" value="661661661">
-        </div>
-        <div class="field">
-          <label>ROR actual (%)</label>
-          <input type="text" name="current_ror" value="60">
+          <label>Fulfillment type</label>
+          <input type="text" name="fulfillment_type" value="self_delivery">
         </div>
         <div class="row">
           <div class="field">
-            <label>Email tablet</label>
-            <input type="text" name="tablet_credentials_email" value="test@uber.com">
+            <label>Cancellation rate</label>
+            <input type="text" name="cancellation_rate" value="4.2">
           </div>
           <div class="field">
-            <label>Password tablet</label>
-            <input type="text" name="tablet_credentials_password" value="1234">
+            <label>L7D onboarded couriers</label>
+            <input type="text" name="L7D_onboarded_couriers" value="0">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>L7D OT share</label>
+            <input type="text" name="L7D_ot_share" value="15.3">
+          </div>
+          <div class="field">
+            <label>L7D BYOC orders</label>
+            <input type="text" name="L7D_byoc_orders" value="87">
           </div>
         </div>
         <div class="field">
-          <label>Razon social</label>
-          <input type="text" name="razon_social" value="Test SL">
+          <label>Input data</label>
+          <input type="text" name="input_data" value="Test merchant">
         </div>
       </div>
 
-      <button type="submit" class="btn" id="submitBtn">Recibir llamada</button>
+      <button type="submit" class="btn" id="submitBtn">Receive call</button>
 
       <div class="result" id="result"></div>
     </form>
   </div>
 
-  <div class="footer">Uber Eats Onboarding &mdash; Internal Testing Tool</div>
+  <div class="footer">Uber Eats BYOC &mdash; Internal Testing Tool</div>
 
   <script>
     const form = document.getElementById('callForm');
@@ -147,14 +135,14 @@
       e.preventDefault();
       btn.disabled = true;
       btn.classList.add('btn-loading');
-      btn.textContent = 'Llamando...';
+      btn.textContent = 'Calling...';
       result.className = 'result';
       result.style.display = 'none';
 
       const data = Object.fromEntries(new FormData(form));
 
       try {
-        const res = await fetch('/api/test-call', {
+        const res = await fetch('/api/test-byoc', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
@@ -163,19 +151,19 @@
 
         if (res.ok) {
           result.className = 'result success';
-          result.textContent = 'Llamada en camino. Recibiras una llamada en unos segundos.';
+          result.textContent = 'Call on its way. You will receive a call in a few seconds.';
         } else {
           result.className = 'result error';
-          result.textContent = json.error || 'Error al iniciar la llamada';
+          result.textContent = json.error || 'Error triggering call';
         }
       } catch (err) {
         result.className = 'result error';
-        result.textContent = 'Error de conexion con el servidor';
+        result.textContent = 'Connection error with the server';
       }
 
       btn.disabled = false;
       btn.classList.remove('btn-loading');
-      btn.textContent = 'Recibir llamada';
+      btn.textContent = 'Receive call';
     });
   </script>
 
