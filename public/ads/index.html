@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ads & Offers Agent — Test</title>
+  <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo3vlJKNoIRF7FbTxOmO3qb00UI2tpu25q8w&s" type="image/png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafafa; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    .header { display: flex; align-items: center; gap: 16px; padding: 24px 0 8px; }
+    .header img { height: 36px; border-radius: 8px; }
+    .header span { font-size: 14px; color: #999; }
+    h1 { font-size: 22px; font-weight: 600; margin: 8px 0 4px; text-align: center; }
+    .subtitle { font-size: 14px; color: #666; margin-bottom: 24px; text-align: center; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 28px; width: 100%; max-width: 540px; margin: 0 16px; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: border-color 0.2s; }
+    .field input:focus, .field select:focus { outline: none; border-color: #06C167; }
+    .field-phone input { font-size: 18px; font-weight: 600; padding: 14px 12px; border-color: #06C167; background: #f0fdf4; }
+    .divider { border: none; border-top: 1px solid #eee; margin: 20px 0; }
+    .toggle-advanced { font-size: 13px; color: #06C167; cursor: pointer; text-align: center; margin-bottom: 16px; user-select: none; }
+    .toggle-advanced:hover { text-decoration: underline; }
+    .advanced { display: none; }
+    .advanced.show { display: block; }
+    .btn { width: 100%; padding: 14px; background: #06C167; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #05a558; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; margin-left: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .result { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 14px; text-align: center; display: none; }
+    .result.success { display: block; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .result.error { display: block; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .footer { padding: 24px; font-size: 12px; color: #aaa; text-align: center; }
+    .row { display: flex; gap: 12px; }
+    .row .field { flex: 1; }
+    .tabs { display: flex; gap: 0; margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+    .tab { flex: 1; padding: 10px 8px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; background: #f5f5f5; color: #666; transition: all 0.2s; border-right: 1px solid #ddd; }
+    .tab:last-child { border-right: none; }
+    .tab.active { background: #06C167; color: #fff; }
+    .tab:hover:not(.active) { background: #eee; }
+    .scenario-desc { font-size: 13px; color: #888; margin-bottom: 16px; padding: 10px; background: #f9f9f9; border-radius: 6px; line-height: 1.4; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo3vlJKNoIRF7FbTxOmO3qb00UI2tpu25q8w&s" alt="Uber Eats">
+    <span>&times;</span>
+    <img src="https://media.licdn.com/dms/image/v2/D4E0BAQHA7jbVAxkZXQ/company-logo_200_200/B4EZgXYt9RHIAI-/0/1752739012753/happyrobot_logo?e=1774483200&v=beta&t=aPyx0L03tv9PdnlCOvdjJhnGilzrzoPqBGPG3k9i_Xk" alt="HappyRobot">
+  </div>
+
+  <h1>Ads & Offers</h1>
+  <p class="subtitle">Select a test scenario and receive a call from the Ads agent</p>
+
+  <div class="card">
+
+    <div class="tabs">
+      <div class="tab active" data-scenario="hidden_gem">Hidden Gem</div>
+      <div class="tab" data-scenario="churned">Churned</div>
+      <div class="tab" data-scenario="momentum">Momentum</div>
+      <div class="tab" data-scenario="turnaround">Turnaround</div>
+    </div>
+
+    <div class="scenario-desc" id="scenarioDesc">Happy path. Friendly merchant, no objections, wants to set it up themselves. Full ads + offers pitch.</div>
+
+    <form id="callForm">
+
+      <div class="field field-phone">
+        <label>Your phone number</label>
+        <input type="tel" id="phone" name="phone" value="+34636081251" required>
+      </div>
+
+      <hr class="divider">
+
+      <div class="row">
+        <div class="field">
+          <label>Contact name</label>
+          <input type="text" id="f_contact" name="daily_contact_name" value="Fernando">
+        </div>
+        <div class="field">
+          <label>Store name</label>
+          <input type="text" id="f_store" name="store_name" value="Fernando Tapas Bar">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>City</label>
+          <input type="text" id="f_city" name="city" value="London">
+        </div>
+        <div class="field">
+          <label>Sales segment</label>
+          <input type="text" id="f_segment" name="sales_segment" value="hidden_gem" readonly>
+        </div>
+      </div>
+
+      <div class="toggle-advanced" onclick="document.querySelector('.advanced').classList.toggle('show')">
+        Advanced fields ▾
+      </div>
+
+      <div class="advanced">
+        <div class="row">
+          <div class="field">
+            <label>Country</label>
+            <input type="text" id="f_country" name="country" value="UK">
+          </div>
+          <div class="field">
+            <label>Cuisine</label>
+            <input type="text" id="f_cuisine" name="cuisine_type" value="Spanish">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Status</label>
+            <input type="text" id="f_status" name="status" value="Active">
+          </div>
+          <div class="field">
+            <label>Has run ads</label>
+            <input type="text" id="f_has_ads" name="has_run_ads" value="no">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>GBS last month ($)</label>
+            <input type="text" id="f_gbs" name="gbs_usd_last_month" value="3500">
+          </div>
+          <div class="field">
+            <label>Orders last month</label>
+            <input type="text" id="f_orders" name="orders_last_month" value="180">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>ROAS</label>
+            <input type="text" id="f_roas" name="roas" value="0">
+          </div>
+          <div class="field">
+            <label>Organic feed rank</label>
+            <input type="text" id="f_rank" name="avg_organic_feed_rank" value="52">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Credits outstanding</label>
+            <input type="text" id="f_credits" name="uem_credits_outstanding" value="50">
+          </div>
+          <div class="field">
+            <label>Credits expiry</label>
+            <input type="text" id="f_expiry" name="credits_expiration_date" value="2026-04-15">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Photo coverage</label>
+            <input type="text" id="f_photo" name="photo_coverage" value="0.45">
+          </div>
+          <div class="field">
+            <label>Online rate 28d</label>
+            <input type="text" id="f_online" name="online_rate_28d" value="0.72">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Marketplace fee (%)</label>
+            <input type="text" id="f_fee" name="eats_marketplace_fee" value="30">
+          </div>
+          <div class="field">
+            <label>Total completed orders</label>
+            <input type="text" id="f_total" name="total_completed_orders" value="1450">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Segment</label>
+            <input type="text" id="f_seg" name="segment" value="SMB">
+          </div>
+          <div class="field">
+            <label>Subsegment</label>
+            <input type="text" id="f_subseg" name="subsegment" value="Small">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Most recent ad date</label>
+            <input type="text" id="f_addate" name="most_recent_ad_date" value="">
+          </div>
+          <div class="field">
+            <label>Pitch priority</label>
+            <input type="text" id="f_pitch" name="pitch_priority" value="P2">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>LM promo spend</label>
+            <input type="text" id="f_promo" name="lm_promo_spend" value="0">
+          </div>
+          <div class="field">
+            <label>Ads feed rank</label>
+            <input type="text" id="f_adsrank" name="avg_ads_feed_rank" value="\\N">
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">Receive call</button>
+
+      <div class="result" id="result"></div>
+    </form>
+  </div>
+
+  <div class="footer">Uber Eats Ads & Offers &mdash; Internal Testing Tool</div>
+
+  <script>
+    const scenarios = {
+      hidden_gem: {
+        desc: "Happy path. Friendly merchant, no objections, wants to set it up themselves. Full ads + offers pitch.",
+        store_name: "Fernando Tapas Bar", daily_contact_name: "Fernando", city: "London", country: "UK",
+        cuisine_type: "Spanish", status: "Active", has_run_ads: "no", most_recent_ad_date: "",
+        gbs_usd_last_month: "3500", orders_last_month: "180", lm_promo_spend: "0", roas: "0",
+        avg_ads_feed_rank: "\\N", avg_organic_feed_rank: "52", uem_credits_outstanding: "50",
+        credits_expiration_date: "2026-04-15", total_completed_orders: "1450", eats_marketplace_fee: "30",
+        photo_coverage: "0.45", online_rate_28d: "0.72", sales_segment: "hidden_gem",
+        segment: "SMB", subsegment: "Small", pitch_priority: "P2", uuid: "test-001-hidden-gem-accept"
+      },
+      churned: {
+        desc: "Churned merchant who used ads before with poor results. Empathetic approach, not standard pitch. Role-play: say ads didn't work, ask for callback next week.",
+        store_name: "The Golden Wok", daily_contact_name: "Fernando", city: "Manchester", country: "UK",
+        cuisine_type: "Chinese", status: "Churn", has_run_ads: "yes", most_recent_ad_date: "2025-06-15",
+        gbs_usd_last_month: "5200", orders_last_month: "310", lm_promo_spend: "0", roas: "3.2",
+        avg_ads_feed_rank: "\\N", avg_organic_feed_rank: "65", uem_credits_outstanding: "\\N",
+        credits_expiration_date: "\\N", total_completed_orders: "4200", eats_marketplace_fee: "30",
+        photo_coverage: "0.35", online_rate_28d: "0.68", sales_segment: "turnaround",
+        segment: "SMB", subsegment: "Small", pitch_priority: "P1", uuid: "test-002-churned-callback"
+      },
+      momentum: {
+        desc: "Already running ads. Agent should NOT re-pitch ads. Only pitch Offers. Role-play: say ads work well, raise 'discounting cheapens my brand' objection, then agree to try.",
+        store_name: "Spice Garden", daily_contact_name: "Fernando", city: "Birmingham", country: "UK",
+        cuisine_type: "Indian", status: "Active", has_run_ads: "yes", most_recent_ad_date: "2026-03-01",
+        gbs_usd_last_month: "18500", orders_last_month: "1200", lm_promo_spend: "0", roas: "9.1",
+        avg_ads_feed_rank: "5", avg_organic_feed_rank: "22", uem_credits_outstanding: "\\N",
+        credits_expiration_date: "\\N", total_completed_orders: "15000", eats_marketplace_fee: "30",
+        photo_coverage: "0.82", online_rate_28d: "0.95", sales_segment: "momentum",
+        segment: "SMB", subsegment: "Medium", pitch_priority: "P2", uuid: "test-003-momentum-offers",
+        running_ads: "true", running_offers: "false"
+      },
+      turnaround: {
+        desc: "Struggling merchant, raises 30% commission objection. Agent should use menu math script. Role-play: say business is slow, object about commission, then decline.",
+        store_name: "Corner Kebab House", daily_contact_name: "Fernando", city: "Leeds", country: "UK",
+        cuisine_type: "Turkish", status: "Active", has_run_ads: "no", most_recent_ad_date: "",
+        gbs_usd_last_month: "800", orders_last_month: "45", lm_promo_spend: "0", roas: "0",
+        avg_ads_feed_rank: "\\N", avg_organic_feed_rank: "89", uem_credits_outstanding: "\\N",
+        credits_expiration_date: "\\N", total_completed_orders: "520", eats_marketplace_fee: "30",
+        photo_coverage: "0.22", online_rate_28d: "0.55", sales_segment: "turnaround",
+        segment: "SMB", subsegment: "Small", pitch_priority: "P3", uuid: "test-004-turnaround-decline"
+      }
+    };
+
+    let activeScenario = 'hidden_gem';
+
+    function loadScenario(key) {
+      activeScenario = key;
+      const s = scenarios[key];
+      document.getElementById('scenarioDesc').textContent = s.desc;
+      document.getElementById('f_store').value = s.store_name;
+      document.getElementById('f_contact').value = s.daily_contact_name;
+      document.getElementById('f_city').value = s.city;
+      document.getElementById('f_country').value = s.country;
+      document.getElementById('f_cuisine').value = s.cuisine_type;
+      document.getElementById('f_status').value = s.status;
+      document.getElementById('f_has_ads').value = s.has_run_ads;
+      document.getElementById('f_addate').value = s.most_recent_ad_date;
+      document.getElementById('f_gbs').value = s.gbs_usd_last_month;
+      document.getElementById('f_orders').value = s.orders_last_month;
+      document.getElementById('f_roas').value = s.roas;
+      document.getElementById('f_rank').value = s.avg_organic_feed_rank;
+      document.getElementById('f_credits').value = s.uem_credits_outstanding;
+      document.getElementById('f_expiry').value = s.credits_expiration_date;
+      document.getElementById('f_photo').value = s.photo_coverage;
+      document.getElementById('f_online').value = s.online_rate_28d;
+      document.getElementById('f_segment').value = s.sales_segment;
+      document.getElementById('f_fee').value = s.eats_marketplace_fee;
+      document.getElementById('f_total').value = s.total_completed_orders;
+      document.getElementById('f_seg').value = s.segment;
+      document.getElementById('f_subseg').value = s.subsegment;
+      document.getElementById('f_pitch').value = s.pitch_priority;
+      document.getElementById('f_promo').value = s.lm_promo_spend;
+      document.getElementById('f_adsrank').value = s.avg_ads_feed_rank;
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.scenario === key));
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => loadScenario(tab.dataset.scenario));
+    });
+
+    const form = document.getElementById('callForm');
+    const btn = document.getElementById('submitBtn');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.classList.add('btn-loading');
+      btn.textContent = 'Calling...';
+      result.className = 'result';
+      result.style.display = 'none';
+
+      const s = scenarios[activeScenario];
+      const fd = Object.fromEntries(new FormData(form));
+
+      const payload = {
+        phone: fd.phone,
+        merchant: {
+          uuid: s.uuid,
+          store_name: fd.store_name,
+          daily_contact_name: fd.daily_contact_name,
+          primary_contact_phone: fd.phone.replace('+', ''),
+          primary_contact_email: "fernando@happyrobot.ai",
+          country: fd.country,
+          city_name__c: fd.city,
+          segment: fd.segment,
+          subsegment: fd.subsegment,
+          status: fd.status,
+          has_run_ads: fd.has_run_ads,
+          most_recent_ad_date: fd.most_recent_ad_date,
+          gbs_usd_last_month: parseFloat(fd.gbs_usd_last_month) || 0,
+          orders_last_month: parseInt(fd.orders_last_month) || 0,
+          lm_promo_spend: parseInt(fd.lm_promo_spend) || 0,
+          roas: parseFloat(fd.roas) || 0,
+          avg_ads_feed_rank: fd.avg_ads_feed_rank,
+          avg_organic_feed_rank: parseInt(fd.avg_organic_feed_rank) || 0,
+          uem_credits_outstanding: fd.uem_credits_outstanding === "\\N" ? "\\N" : parseFloat(fd.uem_credits_outstanding) || 0,
+          credits_expiration_date: fd.credits_expiration_date,
+          total_completed_orders: parseInt(fd.total_completed_orders) || 0,
+          eats_marketplace_fee: parseFloat(fd.eats_marketplace_fee) || 30,
+          physical_location_count: "\\N",
+          pitch_priority: fd.pitch_priority,
+          priority_offer_rec: "N/A",
+          secondary_offer_rec: "N/A",
+          third_offer_rec: "N/A",
+          cuisine_type: fd.cuisine_type,
+          photo_coverage: parseFloat(fd.photo_coverage) || 0,
+          online_rate_28d: parseFloat(fd.online_rate_28d) || 0,
+          sales_segment: fd.sales_segment,
+          ...(s.running_ads ? { running_ads: s.running_ads } : {}),
+          ...(s.running_offers ? { running_offers: s.running_offers } : {})
+        }
+      };
+
+      try {
+        const res = await fetch('/api/test-ads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (res.ok) {
+          result.className = 'result success';
+          result.textContent = 'Call on its way. You will receive a call in a few seconds.';
+        } else {
+          result.className = 'result error';
+          result.textContent = json.error || 'Error triggering call';
+        }
+      } catch (err) {
+        result.className = 'result error';
+        result.textContent = 'Connection error with the server';
+      }
+
+      btn.disabled = false;
+      btn.classList.remove('btn-loading');
+      btn.textContent = 'Receive call';
+    });
+  </script>
+
+</body>
+</html>
