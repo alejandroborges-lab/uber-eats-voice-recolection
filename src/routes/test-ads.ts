@@ -20,7 +20,11 @@ testAdsRouter.post('/', async (req: Request, res: Response) => {
     return;
   }
 
-  // Send only the merchant object (phone is inside as primary_contact_phone)
+  // Sanitize phone
+  if (body.merchant.primary_contact_phone) {
+    body.merchant.primary_contact_phone = body.merchant.primary_contact_phone.replace(/\s/g, '').replace(/^\+/, '');
+  }
+
   const payload = { merchant: body.merchant };
 
   try {

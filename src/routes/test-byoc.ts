@@ -13,6 +13,10 @@ const BYOC_WEBHOOK_URL = process.env.BYOC_WEBHOOK_URL
  */
 testByocRouter.post('/', async (req: Request, res: Response) => {
   const body = req.body;
+  if (body.phone_number) {
+    body.phone_number = body.phone_number.replace(/\s/g, '');
+    if (!body.phone_number.startsWith('+')) body.phone_number = '+' + body.phone_number;
+  }
 
   if (!body.phone_number) {
     res.status(400).json({ error: 'Phone number is required' });

@@ -20,6 +20,10 @@ testCallRouter.post('/', async (req: Request, res: Response) => {
   }
 
   const body = req.body;
+  if (body.contact_phone) {
+    body.contact_phone = body.contact_phone.replace(/\s/g, '');
+    if (!body.contact_phone.startsWith('+')) body.contact_phone = '+' + body.contact_phone;
+  }
 
   if (!body.contact_phone) {
     res.status(400).json({ error: 'Phone number is required' });
