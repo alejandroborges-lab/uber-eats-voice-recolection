@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Churn Recovery Agent — Test</title>
+  <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo3vlJKNoIRF7FbTxOmO3qb00UI2tpu25q8w&s" type="image/png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafafa; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    .header { display: flex; align-items: center; gap: 16px; padding: 24px 0 8px; }
+    .header img { height: 36px; border-radius: 8px; }
+    .header span { font-size: 14px; color: #999; }
+    h1 { font-size: 22px; font-weight: 600; margin: 8px 0 4px; text-align: center; }
+    .subtitle { font-size: 14px; color: #666; margin-bottom: 24px; text-align: center; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 28px; width: 100%; max-width: 480px; margin: 0 16px; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: border-color 0.2s; }
+    .field input:focus, .field select:focus { outline: none; border-color: #06C167; }
+    .field-phone input { font-size: 18px; font-weight: 600; padding: 14px 12px; border-color: #06C167; background: #f0fdf4; }
+    .divider { border: none; border-top: 1px solid #eee; margin: 20px 0; }
+    .toggle-advanced { font-size: 13px; color: #06C167; cursor: pointer; text-align: center; margin-bottom: 16px; user-select: none; }
+    .toggle-advanced:hover { text-decoration: underline; }
+    .advanced { display: none; }
+    .advanced.show { display: block; }
+    .btn { width: 100%; padding: 14px; background: #06C167; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #05a558; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; margin-left: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .result { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 14px; text-align: center; display: none; }
+    .result.success { display: block; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .result.error { display: block; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .footer { padding: 24px; font-size: 12px; color: #aaa; text-align: center; }
+    .row { display: flex; gap: 12px; }
+    .row .field { flex: 1; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo3vlJKNoIRF7FbTxOmO3qb00UI2tpu25q8w&s" alt="Uber Eats">
+    <span>&times;</span>
+    <img src="https://media.licdn.com/dms/image/v2/D4E0BAQHA7jbVAxkZXQ/company-logo_200_200/B4EZgXYt9RHIAI-/0/1752739012753/happyrobot_logo?e=1774483200&v=beta&t=aPyx0L03tv9PdnlCOvdjJhnGilzrzoPqBGPG3k9i_Xk" alt="HappyRobot">
+  </div>
+
+  <h1>Churn Recovery</h1>
+  <p class="subtitle">Enter your phone number and receive a test call from the Churn agent</p>
+
+  <div class="card">
+    <form id="callForm">
+
+      <div class="field field-phone">
+        <label>Your phone number</label>
+        <input type="tel" name="phone_number" value="+34666777888" required>
+      </div>
+
+      <hr class="divider">
+
+      <div class="row">
+        <div class="field">
+          <label>Owner name</label>
+          <input type="text" name="owner_name" value="Thomas">
+        </div>
+        <div class="field">
+          <label>Merchant name</label>
+          <input type="text" name="merchant_name" value="Le Comptoir du Marché">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Compliance status</label>
+          <input type="text" name="compliance_status" value="Invisible">
+        </div>
+        <div class="field">
+          <label>Churn cluster</label>
+          <input type="text" name="churn_cluster" value="Compliance, Low Sales">
+        </div>
+      </div>
+
+      <div class="toggle-advanced" onclick="document.querySelector('.advanced').classList.toggle('show')">
+        Advanced fields ▾
+      </div>
+
+      <div class="advanced">
+        <div class="field">
+          <label>KYC closed reason</label>
+          <input type="text" name="KYC_closed_reason" value="Numéro d'enregistrement commercial (BRN)">
+        </div>
+        <div class="field">
+          <label>Opening hours</label>
+          <input type="text" name="opening_hours" value="Lun–Sam 11:30–22:30">
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Last trip</label>
+            <input type="text" name="last_trip" value="2025-02-10">
+          </div>
+          <div class="field">
+            <label>Photo coverage</label>
+            <input type="text" name="photo_coverage" value="4 articles sans photo">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Store type</label>
+            <input type="text" name="store_type" value="">
+          </div>
+          <div class="field">
+            <label>Last connection day</label>
+            <input type="text" name="last_connection_day" value="">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>L7D ROR</label>
+            <input type="text" name="L7D_ROR" value="">
+          </div>
+          <div class="field">
+            <label>L7D trips</label>
+            <input type="text" name="L7D_trips" value="">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Description coverage</label>
+            <input type="text" name="description_coverage" value="">
+          </div>
+          <div class="field">
+            <label>Total items</label>
+            <input type="text" name="total_items" value="">
+          </div>
+        </div>
+        <div class="field">
+          <label>MCFR</label>
+          <input type="text" name="mcfr" value="">
+        </div>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">Receive call</button>
+
+      <div class="result" id="result"></div>
+    </form>
+  </div>
+
+  <div class="footer">Uber Eats Churn Recovery &mdash; Internal Testing Tool</div>
+
+  <script>
+    const form = document.getElementById('callForm');
+    const btn = document.getElementById('submitBtn');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.classList.add('btn-loading');
+      btn.textContent = 'Calling...';
+      result.className = 'result';
+      result.style.display = 'none';
+
+      const fd = Object.fromEntries(new FormData(form));
+
+      // Convert churn_cluster string to array
+      const clusterStr = (fd.churn_cluster || '').toString();
+      const clusterArr = clusterStr ? clusterStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+      const payload = {
+        merchant_name: fd.merchant_name || '',
+        owner_name: fd.owner_name || '',
+        phone_number: fd.phone_number || '',
+        store_type: fd.store_type || null,
+        compliance_status: fd.compliance_status || '',
+        KYC_closed_reason: fd.KYC_closed_reason || '',
+        L7D_ROR: fd.L7D_ROR || null,
+        last_connection_day: fd.last_connection_day || null,
+        opening_hours: fd.opening_hours || '',
+        L7D_trips: fd.L7D_trips || null,
+        last_trip: fd.last_trip || '',
+        photo_coverage: fd.photo_coverage || '',
+        description_coverage: fd.description_coverage || null,
+        total_items: fd.total_items || null,
+        mcfr: fd.mcfr || null,
+        churn_cluster: clusterArr,
+      };
+
+      try {
+        const res = await fetch('/api/test-churn', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (res.ok) {
+          result.className = 'result success';
+          result.textContent = 'Call on its way. You will receive a call in a few seconds.';
+        } else {
+          result.className = 'result error';
+          result.textContent = json.error || 'Error triggering call';
+        }
+      } catch (err) {
+        result.className = 'result error';
+        result.textContent = 'Connection error with the server';
+      }
+
+      btn.disabled = false;
+      btn.classList.remove('btn-loading');
+      btn.textContent = 'Receive call';
+    });
+  </script>
+
+</body>
+</html>

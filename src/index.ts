@@ -6,6 +6,7 @@ import { dispatchRouter } from './routes/dispatch.js';
 import { testCallRouter } from './routes/test-call.js';
 import { testByocRouter } from './routes/test-byoc.js';
 import { testAdsRouter } from './routes/test-ads.js';
+import { testChurnRouter } from './routes/test-churn.js';
 import { startScheduler, triggerCampaignManually, triggerLegacyManually } from './services/scheduler.js';
 import { getActiveCampaigns } from './config/campaigns.js';
 import { getLogs, getStats } from './services/callback-store.js';
@@ -22,6 +23,8 @@ app.use('/api/test-call', testCallRouter);
 app.use('/api/test-byoc', testByocRouter);
 app.use('/Ads/test', express.static(path.join(process.cwd(), 'public', 'ads')));
 app.use('/api/test-ads', testAdsRouter);
+app.use('/churn/test', express.static(path.join(process.cwd(), 'public', 'churn')));
+app.use('/api/test-churn', testChurnRouter);
 
 // ─── Health & Dashboard ────────────────────────────────────────────
 
