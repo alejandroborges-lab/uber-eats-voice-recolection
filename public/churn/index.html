@@ -13,13 +13,14 @@
     .header span { font-size: 14px; color: #999; }
     h1 { font-size: 22px; font-weight: 600; margin: 8px 0 4px; text-align: center; }
     .subtitle { font-size: 14px; color: #666; margin-bottom: 24px; text-align: center; }
-    .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 28px; width: 100%; max-width: 480px; margin: 0 16px; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 28px; width: 100%; max-width: 520px; margin: 0 16px; }
     .field { margin-bottom: 16px; }
     .field label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
     .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: border-color 0.2s; }
     .field input:focus, .field select:focus { outline: none; border-color: #06C167; }
     .field-phone input { font-size: 18px; font-weight: 600; padding: 14px 12px; border-color: #06C167; background: #f0fdf4; }
     .divider { border: none; border-top: 1px solid #eee; margin: 20px 0; }
+    .section-label { font-size: 11px; font-weight: 700; color: #06C167; text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 8px; }
     .toggle-advanced { font-size: 13px; color: #06C167; cursor: pointer; text-align: center; margin-bottom: 16px; user-select: none; }
     .toggle-advanced:hover { text-decoration: underline; }
     .advanced { display: none; }
@@ -52,31 +53,33 @@
     <form id="callForm">
 
       <div class="field field-phone">
-        <label>Your phone number</label>
-        <input type="tel" name="phone_number" value="+34666777888" required>
+        <label>Merchant phone number</label>
+        <input type="tel" name="merchant_phone_number" value="+34666777888" required>
       </div>
 
       <hr class="divider">
 
-      <div class="row">
-        <div class="field">
-          <label>Owner name</label>
-          <input type="text" name="owner_name" value="Thomas">
-        </div>
-        <div class="field">
-          <label>Merchant name</label>
-          <input type="text" name="merchant_name" value="Le Comptoir du Marché">
-        </div>
+      <div class="field">
+        <label>Store name</label>
+        <input type="text" name="store_name" value="Koala Pizza 24/24 7/7 - St-Jean-du-Cardonnay">
       </div>
 
       <div class="row">
         <div class="field">
-          <label>Compliance status</label>
-          <input type="text" name="compliance_status" value="Invisible">
+          <label>Onboarding status</label>
+          <select name="onboarding_status">
+            <option value="activated" selected>activated</option>
+            <option value="onboarding">onboarding</option>
+            <option value="paused">paused</option>
+            <option value="lost">lost</option>
+          </select>
         </div>
         <div class="field">
-          <label>Churn cluster</label>
-          <input type="text" name="churn_cluster" value="Compliance, Low Sales">
+          <label>Is visible</label>
+          <select name="is_visible">
+            <option value="TRUE" selected>TRUE</option>
+            <option value="FALSE">FALSE</option>
+          </select>
         </div>
       </div>
 
@@ -85,58 +88,117 @@
       </div>
 
       <div class="advanced">
+
+        <div class="section-label">Identification</div>
         <div class="field">
-          <label>KYC closed reason</label>
-          <input type="text" name="KYC_closed_reason" value="Numéro d'enregistrement commercial (BRN)">
+          <label>Restaurant UUID</label>
+          <input type="text" name="restaurant_uuid" value="46629a95-61cd-536c-8582-0d1577c14cfc">
         </div>
-        <div class="field">
-          <label>Opening hours</label>
-          <input type="text" name="opening_hours" value="Lun–Sam 11:30–22:30">
-        </div>
+
+        <div class="section-label">Activity / Engagement</div>
         <div class="row">
           <div class="field">
-            <label>Last trip</label>
-            <input type="text" name="last_trip" value="2025-02-10">
+            <label>Last trip date</label>
+            <input type="text" name="last_trip_dt" value="2026-03-06 0:00:00">
           </div>
           <div class="field">
-            <label>Photo coverage</label>
-            <input type="text" name="photo_coverage" value="4 articles sans photo">
-          </div>
-        </div>
-        <div class="row">
-          <div class="field">
-            <label>Store type</label>
-            <input type="text" name="store_type" value="">
-          </div>
-          <div class="field">
-            <label>Last connection day</label>
-            <input type="text" name="last_connection_day" value="">
+            <label>Last connected</label>
+            <input type="text" name="last_connected" value="2026-03-13 5:00:00">
           </div>
         </div>
         <div class="row">
           <div class="field">
             <label>L7D ROR</label>
-            <input type="text" name="L7D_ROR" value="">
+            <input type="text" name="l7d_ror" value="1">
           </div>
           <div class="field">
-            <label>L7D trips</label>
-            <input type="text" name="L7D_trips" value="">
+            <label>L14D ROR</label>
+            <input type="text" name="l14d_ror" value="1">
+          </div>
+        </div>
+        <div class="field">
+          <label>First visible timestamp</label>
+          <input type="text" name="first_visible_timestamp_local" value="2024-02-06 16:27:15">
+        </div>
+
+        <div class="section-label">Compliance (KYC / KYB)</div>
+        <div class="row">
+          <div class="field">
+            <label>Latest KYC status</label>
+            <select name="latest_kyc_status">
+              <option value="OPEN" selected>OPEN</option>
+              <option value="PASS">PASS</option>
+              <option value="PENDING">PENDING</option>
+              <option value="FAIL">FAIL</option>
+              <option value="REJECTED">REJECTED</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Latest KYB status</label>
+            <select name="latest_kyb_status">
+              <option value="Pass" selected>Pass</option>
+              <option value="Fail">Fail</option>
+              <option value="Pending">Pending</option>
+              <option value="In Review">In Review</option>
+            </select>
           </div>
         </div>
         <div class="row">
           <div class="field">
-            <label>Description coverage</label>
-            <input type="text" name="description_coverage" value="">
+            <label>ID documents approved</label>
+            <select name="id_documents_approved">
+              <option value="TRUE" selected>TRUE</option>
+              <option value="FALSE">FALSE</option>
+            </select>
           </div>
           <div class="field">
-            <label>Total items</label>
-            <input type="text" name="total_items" value="">
+            <label>Verified by ops</label>
+            <select name="verified_by_ops">
+              <option value="Verified">Verified</option>
+              <option value="Unverified" selected>Unverified</option>
+              <option value="Pending Review">Pending Review</option>
+            </select>
           </div>
         </div>
         <div class="field">
-          <label>MCFR</label>
-          <input type="text" name="mcfr" value="">
+          <label>KYC rejection reason</label>
+          <input type="text" name="kyc_rejection_reason" value="">
         </div>
+        <div class="field">
+          <label>KYB notes</label>
+          <input type="text" name="kyb_notes" value="">
+        </div>
+        <div class="field">
+          <label>KYB sent timestamp</label>
+          <input type="text" name="kyb_sent_timestamp" value="2024-02-01 15:13:14">
+        </div>
+
+        <div class="section-label">Menu Quality</div>
+        <div class="row">
+          <div class="field">
+            <label>Total items</label>
+            <input type="text" name="total_items" value="10">
+          </div>
+          <div class="field">
+            <label>Photo coverage (0-1)</label>
+            <input type="text" name="photo_coverage" value="1">
+          </div>
+        </div>
+        <div class="field">
+          <label>Description coverage (0-1)</label>
+          <input type="text" name="description_coverage" value="1">
+        </div>
+
+        <div class="section-label">Cancellation & Operations</div>
+        <div class="field">
+          <label>MCFR (cancellation rate)</label>
+          <input type="text" name="mcfr" value="0">
+        </div>
+        <div class="field">
+          <label>Opening hours</label>
+          <input type="text" name="opening_hours" value="Mon-Sun: 00:00 - 23:59">
+        </div>
+
       </div>
 
       <button type="submit" class="btn" id="submitBtn">Receive call</button>
@@ -162,27 +224,29 @@
 
       const fd = Object.fromEntries(new FormData(form));
 
-      // Convert churn_cluster string to array
-      const clusterStr = (fd.churn_cluster || '').toString();
-      const clusterArr = clusterStr ? clusterStr.split(',').map(s => s.trim()).filter(Boolean) : [];
-
       const payload = {
-        merchant_name: fd.merchant_name || '',
-        owner_name: fd.owner_name || '',
-        phone_number: fd.phone_number || '',
-        store_type: fd.store_type || null,
-        compliance_status: fd.compliance_status || '',
-        KYC_closed_reason: fd.KYC_closed_reason || '',
-        L7D_ROR: fd.L7D_ROR || null,
-        last_connection_day: fd.last_connection_day || null,
-        opening_hours: fd.opening_hours || '',
-        L7D_trips: fd.L7D_trips || null,
-        last_trip: fd.last_trip || '',
+        restaurant_uuid: fd.restaurant_uuid || '',
+        store_name: fd.store_name || '',
+        merchant_phone_number: fd.merchant_phone_number || '',
+        onboarding_status: fd.onboarding_status || '',
+        first_visible_timestamp_local: fd.first_visible_timestamp_local || '',
+        is_visible: fd.is_visible || '',
+        last_trip_dt: fd.last_trip_dt || '',
+        l7d_ror: fd.l7d_ror || '',
+        l14d_ror: fd.l14d_ror || '',
+        last_connected: fd.last_connected || '',
+        latest_kyc_status: fd.latest_kyc_status || '',
+        latest_kyb_status: fd.latest_kyb_status || '',
+        kyb_notes: fd.kyb_notes || '',
+        kyc_rejection_reason: fd.kyc_rejection_reason || '',
+        kyb_sent_timestamp: fd.kyb_sent_timestamp || '',
+        id_documents_approved: fd.id_documents_approved || '',
+        verified_by_ops: fd.verified_by_ops || '',
+        total_items: fd.total_items || '',
         photo_coverage: fd.photo_coverage || '',
-        description_coverage: fd.description_coverage || null,
-        total_items: fd.total_items || null,
-        mcfr: fd.mcfr || null,
-        churn_cluster: clusterArr,
+        description_coverage: fd.description_coverage || '',
+        mcfr: fd.mcfr || '',
+        opening_hours: fd.opening_hours || '',
       };
 
       try {
