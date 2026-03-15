@@ -6,39 +6,103 @@
   <title>Ads & Offers Agent — Test</title>
   <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo3vlJKNoIRF7FbTxOmO3qb00UI2tpu25q8w&s" type="image/png">
   <style>
+    :root {
+      --green: #06C167;
+      --green-light: #F0FDF4;
+      --green-dark: #05a558;
+      --bg: #fafafa;
+      --card: #fff;
+      --border: #E5E7EB;
+      --text: #1a1a1a;
+      --muted: #6B7280;
+      --panel-bg: #F9FAFB;
+      --amber: #F59E0B;
+      --amber-bg: #FFFBEB;
+      --blue: #3B82F6;
+      --blue-bg: #EFF6FF;
+      --purple: #8B5CF6;
+      --purple-bg: #F5F3FF;
+      --red: #EF4444;
+      --red-bg: #FEF2F2;
+      --green-badge-bg: #ECFDF5;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafafa; color: #1a1a1a; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
     .header { display: flex; align-items: center; gap: 16px; padding: 24px 0 8px; }
     .header img { height: 36px; border-radius: 8px; }
     .header span { font-size: 14px; color: #999; }
     h1 { font-size: 22px; font-weight: 600; margin: 8px 0 4px; text-align: center; }
-    .subtitle { font-size: 14px; color: #666; margin-bottom: 24px; text-align: center; }
-    .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 28px; width: 100%; max-width: 540px; margin: 0 16px; }
+    .subtitle { font-size: 14px; color: var(--muted); margin-bottom: 24px; text-align: center; }
+    .card { background: var(--card); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 28px; width: 100%; max-width: 560px; margin: 0 16px; }
     .field { margin-bottom: 16px; }
     .field label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: border-color 0.2s; }
-    .field input:focus, .field select:focus { outline: none; border-color: #06C167; }
-    .field-phone input { font-size: 18px; font-weight: 600; padding: 14px 12px; border-color: #06C167; background: #f0fdf4; }
-    .field-scenario select { font-size: 14px; font-weight: 600; background: #fff; }
+    .field input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: border-color 0.2s; }
+    .field input:focus { outline: none; border-color: var(--green); }
+    .field-phone input { font-size: 18px; font-weight: 600; padding: 14px 12px; border-color: var(--green); background: var(--green-light); }
     .divider { border: none; border-top: 1px solid #eee; margin: 20px 0; }
-    .toggle-advanced { font-size: 13px; color: #06C167; cursor: pointer; text-align: center; margin-bottom: 16px; user-select: none; }
+    .section-label { font-size: 11px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 8px; }
+    .toggle-advanced { font-size: 13px; color: var(--green); cursor: pointer; text-align: center; margin-bottom: 16px; user-select: none; }
     .toggle-advanced:hover { text-decoration: underline; }
     .advanced { display: none; }
     .advanced.show { display: block; }
-    .btn { width: 100%; padding: 14px; background: #06C167; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-    .btn:hover { background: #05a558; }
+    .btn { width: 100%; padding: 14px; background: var(--green); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: var(--green-dark); }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
     .btn-loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; margin-left: 8px; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .result { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 14px; text-align: center; display: none; }
-    .result.success { display: block; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-    .result.error { display: block; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .result.success { display: block; background: var(--green-light); color: #166534; border: 1px solid #bbf7d0; }
+    .result.error { display: block; background: var(--red-bg); color: #991b1b; border: 1px solid #fecaca; }
     .footer { padding: 24px; font-size: 12px; color: #aaa; text-align: center; }
     .row { display: flex; gap: 12px; }
     .row .field { flex: 1; }
-    .scenario-desc { font-size: 13px; color: #888; margin-bottom: 16px; padding: 10px; background: #f9f9f9; border-radius: 6px; line-height: 1.4; }
-    .section-label { font-size: 11px; font-weight: 700; color: #06C167; text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 8px; }
-    optgroup { font-weight: 700; font-size: 13px; }
+
+    /* Custom dropdown */
+    .dropdown { position: relative; margin-bottom: 16px; }
+    .dropdown-label { font-size: 12px; font-weight: 600; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .dropdown-trigger { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-weight: 600; background: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: border-color 0.2s; }
+    .dropdown-trigger:hover { border-color: var(--green); }
+    .dropdown-trigger.open { border-color: var(--green); border-radius: 8px 8px 0 0; }
+    .dropdown-trigger .arrow { transition: transform 0.2s; font-size: 12px; color: var(--muted); }
+    .dropdown-trigger.open .arrow { transform: rotate(180deg); }
+    .dropdown-menu { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid var(--green); border-top: none; border-radius: 0 0 8px 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); max-height: 0; overflow: hidden; transition: max-height 0.25s ease; z-index: 100; }
+    .dropdown-menu.open { max-height: 400px; overflow-y: auto; }
+    .dropdown-menu::-webkit-scrollbar { width: 6px; }
+    .dropdown-menu::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+    .dropdown-group { font-size: 11px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 12px 4px; }
+    .dropdown-item { padding: 8px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; transition: background 0.15s; }
+    .dropdown-item:hover { background: var(--green-light); }
+    .dropdown-item.selected { font-weight: 600; }
+    .dropdown-item .check { width: 16px; color: var(--green); font-size: 14px; margin-right: 4px; flex-shrink: 0; }
+    .dropdown-item .name { flex: 1; }
+    .dropdown-item .tag { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; margin-left: 8px; }
+    .tag-ao { background: var(--green-badge-bg); color: #059669; }
+    .tag-ads { background: var(--amber-bg); color: #D97706; }
+    .tag-offers { background: var(--blue-bg); color: #2563EB; }
+    .tag-upsell { background: var(--purple-bg); color: #7C3AED; }
+    .tag-edge { background: #F3F4F6; color: #6B7280; }
+
+    /* Detail panel */
+    .detail-panel { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease; padding: 0 16px; margin-bottom: 0; }
+    .detail-panel.visible { max-height: 600px; opacity: 1; padding: 16px; margin-bottom: 16px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .badge { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px; }
+    .badge-green { background: var(--green-badge-bg); color: #059669; }
+    .badge-red { background: var(--red-bg); color: #DC2626; }
+    .badge-amber { background: var(--amber-bg); color: #D97706; }
+    .badge-blue { background: var(--blue-bg); color: #2563EB; }
+    .badge-purple { background: var(--purple-bg); color: #7C3AED; }
+    .badge-grey { background: #F3F4F6; color: #6B7280; }
+    .detail-section { margin-bottom: 10px; }
+    .detail-section:last-child { margin-bottom: 0; }
+    .detail-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .detail-text { font-size: 13px; color: #374151; line-height: 1.5; }
+    .detail-bullets { font-size: 13px; color: #374151; line-height: 1.6; padding-left: 16px; }
+    .detail-bullets li { margin-bottom: 2px; }
+    .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+    .data-item { font-size: 12px; }
+    .data-label { color: var(--muted); }
+    .data-value { font-weight: 600; color: var(--text); }
   </style>
 </head>
 <body>
@@ -54,12 +118,32 @@
 
   <div class="card">
 
-    <div class="field field-scenario">
-      <label>Test scenario</label>
-      <select id="scenarioSelect"></select>
+    <!-- Custom dropdown -->
+    <div class="dropdown">
+      <div class="dropdown-label">Test scenario</div>
+      <div class="dropdown-trigger" id="dropdownTrigger" onclick="toggleDropdown()">
+        <span id="triggerText"></span>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="dropdown-menu" id="dropdownMenu"></div>
     </div>
 
-    <div class="scenario-desc" id="scenarioDesc"></div>
+    <!-- Detail panel -->
+    <div class="detail-panel" id="detailPanel">
+      <div class="badges" id="badges"></div>
+      <div class="detail-section">
+        <div class="detail-title">What is this scenario?</div>
+        <div class="detail-text" id="detailDesc"></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-title">How to test this</div>
+        <ul class="detail-bullets" id="detailHow"></ul>
+      </div>
+      <div class="detail-section">
+        <div class="detail-title">Key data points</div>
+        <div class="data-grid" id="detailData"></div>
+      </div>
+    </div>
 
     <form id="callForm">
 
@@ -118,7 +202,6 @@
             <input type="text" id="f_rank" name="avg_organic_feed_rank" value="">
           </div>
         </div>
-
         <div class="section-label">Ads & Offers</div>
         <div class="row">
           <div class="field">
@@ -140,7 +223,6 @@
             <input type="text" id="f_expiry" name="credits_expiration_date" value="">
           </div>
         </div>
-
         <div class="section-label">Quality</div>
         <div class="row">
           <div class="field">
@@ -165,7 +247,6 @@
       </div>
 
       <button type="submit" class="btn" id="submitBtn">Receive call</button>
-
       <div class="result" id="result"></div>
     </form>
   </div>
@@ -174,57 +255,239 @@
 
   <script src="scenarios.js"></script>
   <script>
-    const sel = document.getElementById('scenarioSelect');
-    const descEl = document.getElementById('scenarioDesc');
-
-    // Build dropdown with groups
-    const groups = {
-      'Group A: Ads & Offers': ['sc01','sc02','sc03','sc04','sc05','sc06','sc07','sc08','sc09'],
-      'Group B: Ads Only': ['sc10','sc11','sc12','sc13','sc14','sc15','sc16','sc17','sc18'],
-      'Group C: Offers Only': ['sc19','sc20','sc21'],
-      'Group D: Upsell / Optimise': ['sc22','sc23','sc24'],
-      'Group E: Edge Cases': ['sc25','sc26','sc27','sc28'],
+    // Scenario metadata
+    const meta = {
+      sc01: { segment: "momentum", churned: "active", ads_exp: "new_to_ads", pitch: "ads_and_offers",
+        desc: "High-volume restaurant (600 orders/mo, £3000 GBS) that's never tried Ads or Offers. Doing well organically but invisible in feed (rank ~55). The \"Invisible Performer\" — great food, no marketing.",
+        how: ["Act impressed that someone from Uber Eats is calling", "You're busy, things are going well", "Say \"I've never really looked into ads\" or \"we've been managing okay without it\"", "Ask about cost — you should be fairly easy to convince"],
+        data: { "Orders/mo": 600, "GBS": "£3,000", "Feed rank": 55, "Ads": "Never Used", "Offers": "Never Used", "ROAS": 0, "Credits": "None", "Support": 0 }},
+      sc02: { segment: "momentum", churned: "active", ads_exp: "churned_ads", pitch: "ads_and_offers",
+        desc: "Was running ads, stopped, but still doing well on orders (620/mo). Had decent ROAS of 4.1x when running. Never tried offers.",
+        how: ["Say \"yeah I did try it but wasn't sure it was worth it\"", "Or \"I forgot to keep it going\"", "Be open to hearing why you should restart", "Ask what changed or what's different now"],
+        data: { "Orders/mo": 620, "GBS": "£3,200", "Feed rank": 48, "Ads": "Churned", "Offers": "Never Used", "ROAS": "4.1x", "Credits": "None", "Support": 0 }},
+      sc03: { segment: "momentum", churned: "churned", ads_exp: "churned_ads", pitch: "ads_and_offers",
+        desc: "Left the platform entirely (status=Churn) despite decent volume (580 orders when active). Used both ads and offers before, stopped everything.",
+        how: ["Be somewhat reluctant — \"yeah we stepped back from Uber Eats for a bit\"", "Cite frustration with fees or too many issues", "Not hostile but you need convincing", "Ask \"what's changed?\" or \"why should I bother again?\""],
+        data: { "Orders/mo": 580, "GBS": "£2,800", "Feed rank": 60, "Ads": "Churned", "Offers": "Churned", "ROAS": "3.5x", "Credits": "None", "Support": 2 }},
+      sc04: { segment: "hidden_gem", churned: "active", ads_exp: "new_to_ads", pitch: "ads_and_offers",
+        desc: "THE most common scenario. Good restaurant (4.6 rating) buried in feed (rank 45). 350 orders/mo — decent but could be much more. Never tried any tools.",
+        how: ["You know your food is good but frustrated you don't get more orders", "Say \"I don't really understand why we're not busier on Uber Eats\"", "\"We get good reviews but not enough orders\"", "Be receptive to the visibility pitch"],
+        data: { "Orders/mo": 350, "GBS": "£1,500", "Feed rank": 45, "Ads": "Never Used", "Offers": "Never Used", "ROAS": 0, "Credits": "None", "Support": 0 }},
+      sc05: { segment: "hidden_gem", churned: "active", ads_exp: "churned_ads", pitch: "ads_and_offers",
+        desc: "Similar to #4 but tried ads before and stopped (ROAS was 3.2x). Still buried in feed (rank 42). Never tried offers.",
+        how: ["Say \"I did try it but I couldn't really tell if it made a difference\"", "Ask how you'd know it's working this time", "Be cautiously interested"],
+        data: { "Orders/mo": 340, "GBS": "£1,400", "Feed rank": 42, "Ads": "Churned", "Offers": "Never Used", "ROAS": "3.2x", "Credits": "None", "Support": 1 }},
+      sc06: { segment: "hidden_gem", churned: "churned", ads_exp: "churned_ads", pitch: "ads_and_offers",
+        desc: "Churned from platform AND previously tried both ads and offers. Low engagement all round. 3 support cases — has had issues.",
+        how: ["Be more guarded — \"We had some problems with Uber Eats\"", "Mention late deliveries, support issues, or fees", "You need empathy and acknowledgment before listening to any pitch", "Don't be hostile, just tired/skeptical"],
+        data: { "Orders/mo": 320, "GBS": "£1,350", "Feed rank": 48, "Ads": "Churned", "Offers": "Churned", "ROAS": "2.8x", "Credits": "None", "Support": 3 }},
+      sc07: { segment: "turnaround", churned: "active", ads_exp: "new_to_ads", pitch: "ads_and_offers",
+        desc: "\"The Struggling Small Restaurant\" — only 60 orders/mo, very low visibility (rank 72), low photo coverage (35%), low rating (3.8). Never tried any tools.",
+        how: ["Be a bit stressed or discouraged", "\"We're not really getting much from Uber Eats to be honest\"", "Be price-sensitive — ask about cost early", "Worry about whether ads would even work for a small place"],
+        data: { "Orders/mo": 60, "GBS": "£800", "Feed rank": 72, "Ads": "Never Used", "Offers": "Never Used", "ROAS": 0, "Credits": "None", "Support": 0 }},
+      sc08: { segment: "turnaround", churned: "active", ads_exp: "churned_ads", pitch: "ads_and_offers",
+        desc: "Low volume (75 orders) and previously tried ads but stopped. Struggled and gave up on ads.",
+        how: ["\"Yeah I tried the ads thing, didn't really work for us\"", "Be skeptical but not closed off", "Ask \"what's the minimum I could spend?\"", "Or \"can I just try it for a week?\""],
+        data: { "Orders/mo": 75, "GBS": "£1,000", "Feed rank": 65, "Ads": "Churned", "Offers": "Never Used", "ROAS": "2.2x", "Credits": "None", "Support": 1 }},
+      sc09: { segment: "turnaround", churned: "churned", ads_exp: "churned_ads", pitch: "ads_and_offers",
+        desc: "The most delicate scenario. Churned from platform, low volume when active (55 orders), previously tried ads and offers, both failed.",
+        how: ["Be the toughest sell — \"Look, we basically gave up on Uber Eats\"", "You're skeptical of everything", "Mention ads didn't work, fees too high, or doing better elsewhere", "Test the agent's empathy and ability to handle rejection gracefully"],
+        data: { "Orders/mo": 55, "GBS": "£700", "Feed rank": 68, "Ads": "Churned", "Offers": "Churned", "ROAS": "1.8x", "Credits": "None", "Support": 4 }},
+      sc10: { segment: "promo_first", churned: "active", ads_exp: "new_to_ads", pitch: "ads_only",
+        desc: "\"The Offer-Only Merchant\" — already running offers (Running forever), never tried ads. The pitch is \"Ads amplify your existing offers.\"",
+        how: ["\"We already run offers, they work fine\"", "Push back on whether ads are necessary on top of offers", "Ask \"won't that just cost more on top of what we're already spending?\""],
+        data: { "Orders/mo": 380, "GBS": "£1,700", "Feed rank": 38, "Ads": "Never Used", "Offers": "Running", "Offer spend": "£85", "Support": 0 }},
+      sc11: { segment: "promo_first", churned: "active", ads_exp: "churned_ads", pitch: "ads_only",
+        desc: "Running offers AND previously ran ads but stopped. Had 3.8x ROAS when running ads. Top Eats earned.",
+        how: ["\"We did try ads alongside our offers but stopped\"", "You're running offers and they work", "Convince me ads add value on top"],
+        data: { "Orders/mo": 400, "GBS": "£1,800", "Feed rank": 35, "Ads": "Churned", "Offers": "Running", "ROAS": "3.8x", "Offer spend": "£110", "Support": 0 }},
+      sc12: { segment: "promo_first", churned: "churned", ads_exp: "churned_ads", pitch: "ads_only",
+        desc: "Platform-churned, was running offers and tried ads before. 2 support cases.",
+        how: ["\"We've had a rough time with Uber Eats\"", "Still have offers running but you've disengaged", "Be tired and price-sensitive"],
+        data: { "Orders/mo": 310, "GBS": "£1,300", "Feed rank": 52, "Ads": "Churned", "Offers": "Running", "ROAS": "2.5x", "Offer spend": "£70", "Support": 2 }},
+      sc13: { segment: "momentum", churned: "active", ads_exp: "new_to_ads", pitch: "ads_only",
+        desc: "High-volume (650 orders) running offers, never tried ads. Exclusive. Segment override applied.",
+        how: ["\"Our offers are doing great, we don't need ads\"", "You're busy and successful", "Hard to see why you need to add ads"],
+        data: { "Orders/mo": 650, "GBS": "£3,500", "Feed rank": 30, "Ads": "Never Used", "Offers": "Running", "Offer spend": "£160", "Support": 0 }},
+      sc14: { segment: "momentum", churned: "active", ads_exp: "churned_ads", pitch: "ads_only",
+        desc: "High-volume, running offers, tried ads and stopped. Had 4.5x ROAS on ads.",
+        how: ["\"We ran ads for a while but the offers seemed enough\"", "Had good results but still stopped", "Explore why"],
+        data: { "Orders/mo": 580, "GBS": "£3,100", "Feed rank": 35, "Ads": "Churned", "Offers": "Running", "ROAS": "4.5x", "Offer spend": "£140", "Support": 0 }},
+      sc15: { segment: "hidden_gem", churned: "active", ads_exp: "new_to_ads", pitch: "ads_only",
+        desc: "Low visibility (rank 50) running offers, never tried ads. Offers alone aren't cutting it.",
+        how: ["\"We're doing offers but we're still not getting enough orders\"", "Open to hearing about ads as an add-on", "Ask about offer types and costs"],
+        data: { "Orders/mo": 320, "GBS": "£1,400", "Feed rank": 50, "Ads": "Never Used", "Offers": "Running", "Offer spend": "£65", "Support": 0 }},
+      sc16: { segment: "hidden_gem", churned: "active", ads_exp: "churned_ads", pitch: "ads_only",
+        desc: "Low visibility, running offers, tried ads before. 1 support case.",
+        how: ["\"Tried ads, they didn't seem to move the needle much alongside our offers\"", "Mildly skeptical"],
+        data: { "Orders/mo": 300, "GBS": "£1,250", "Feed rank": 55, "Ads": "Churned", "Offers": "Running", "ROAS": "3.0x", "Offer spend": "£75", "Support": 1 }},
+      sc17: { segment: "turnaround", churned: "active", ads_exp: "new_to_ads", pitch: "ads_only",
+        desc: "Low volume (80 orders) running offers, never tried ads. Discouraged.",
+        how: ["\"We've got offers running but honestly not much is happening\"", "Worried about adding more cost"],
+        data: { "Orders/mo": 80, "GBS": "£1,050", "Feed rank": 65, "Ads": "Never Used", "Offers": "Running", "Offer spend": "£35", "Support": 0 }},
+      sc18: { segment: "turnaround", churned: "active", ads_exp: "churned_ads", pitch: "ads_only",
+        desc: "Low volume (70 orders) running offers, tried ads before. Not angry, just resigned.",
+        how: ["\"We tried everything — offers, ads — nothing really works\"", "Test the agent's resilience", "You're not angry, just resigned"],
+        data: { "Orders/mo": 70, "GBS": "£900", "Feed rank": 70, "Ads": "Churned", "Offers": "Running", "ROAS": "2.0x", "Offer spend": "£30", "Support": 1 }},
+      sc19: { segment: "momentum", churned: "active", ads_exp: "recently_active", pitch: "offers_only",
+        desc: "\"The Active Advertiser\" — running ads with great 7.5x ROAS, auto-bid on, never tried offers. Pitch: \"Convert your ad traffic with Offers.\" Exclusive, Top Eats.",
+        how: ["\"Our ads are working brilliantly, why would we need offers too?\"", "You're a happy ads user", "The agent should pitch offers as converting the traffic ads drive", "Be open but need the logic"],
+        data: { "Orders/mo": 620, "GBS": "£3,200", "Feed rank": 25, "Ads": "Running (7.5x)", "Offers": "Never Used", "Daily budget": "£8", "Ad spend": "£82", "Support": 0 }},
+      sc20: { segment: "hidden_gem", churned: "active", ads_exp: "recently_active", pitch: "offers_only",
+        desc: "Running ads (5.8x ROAS) but under-utilising budget. Never tried offers. Still buried in feed despite ads.",
+        how: ["\"Ads are okay but I'm still not where I want to be\"", "Open to offers as an add-on", "Ask about offer types and costs"],
+        data: { "Orders/mo": 330, "GBS": "£1,450", "Feed rank": 46, "Ads": "Running (5.8x)", "Offers": "Never Used", "Daily budget": "£5", "Ad spend": "£50", "Support": 0 }},
+      sc21: { segment: "turnaround", churned: "active", ads_exp: "recently_active", pitch: "offers_only",
+        desc: "Running ads but still struggling (65 orders, 4.2x ROAS). Offers churned previously. Low photo coverage.",
+        how: ["\"I'm spending on ads but barely getting orders\"", "Frustrated", "Test whether agent suggests offers to boost conversion alongside existing ads"],
+        data: { "Orders/mo": 65, "GBS": "£850", "Feed rank": 62, "Ads": "Running (4.2x)", "Offers": "Churned", "Daily budget": "£3", "Ad spend": "£24", "Support": 0 }},
+      sc22: { segment: "momentum", churned: "active", ads_exp: "recently_active", pitch: "upsell_optimise",
+        desc: "\"The Full Stack\" top performer — running both ads (8.2x ROAS) and offers. But under-spending (budget util 65%, £7/day vs rec £14). Pitch: performance review + budget increase.",
+        how: ["\"Everything's going well, why are you calling?\"", "You're happy", "Agent should identify the budget gap and suggest increasing", "Ask \"will spending more actually get proportionally more?\""],
+        data: { "Orders/mo": 700, "GBS": "£3,800", "Feed rank": 15, "Ads": "Running (8.2x)", "Offers": "Running", "Budget": "£7 (rec: £14)", "Ad spend": "£95", "Support": 0 }},
+      sc23: { segment: "hidden_gem", churned: "active", ads_exp: "recently_active", pitch: "upsell_optimise",
+        desc: "Running both but under-optimised. Hidden gem (rank 44), ads at 5.5x ROAS but budget only £4/day (util 58%).",
+        how: ["\"We're doing a bit of everything but not sure if we're doing it right\"", "Open to guidance", "Ask about what specifically should change"],
+        data: { "Orders/mo": 340, "GBS": "£1,550", "Feed rank": 44, "Ads": "Running (5.5x)", "Offers": "Running", "Budget": "£4/day", "Ad spend": "£48", "Support": 0 }},
+      sc24: { segment: "turnaround", churned: "active", ads_exp: "recently_active", pitch: "upsell_optimise",
+        desc: "Running both but still struggling (70 orders). Non-standard MPF (25%). Low everything.",
+        how: ["\"We're spending on ads and offers and still not getting orders\"", "Frustrated and sceptical", "Test whether agent can find something to optimise rather than just upsell"],
+        data: { "Orders/mo": 70, "GBS": "£920", "Feed rank": 58, "Ads": "Running (3.5x)", "Offers": "Running", "Budget": "£2.50/day", "MPF": "25%", "Support": 2 }},
+      sc25: { segment: "hidden_gem", churned: "active", ads_exp: "new_to_ads", pitch: "ads_and_offers",
+        desc: "Same as #4 but with £25 ad credits expiring 2026-04-15. Tests whether agent mentions credits appropriately.",
+        how: ["Same as #4 but if agent doesn't mention credits, push back on cost", "Say \"seems expensive\" to see if they use credits as a closer"],
+        data: { "Orders/mo": 350, "GBS": "£1,500", "Feed rank": 45, "Ads": "Never Used", "Credits": "£25 (exp 15 Apr)", "Support": 0 }},
+      sc26: { segment: "hidden_gem", churned: "active", ads_exp: "churned_ads", pitch: "ads_and_offers",
+        desc: "Churned from ads with £40 credits — the lowest barrier to re-entry. Strongest credits pitch case.",
+        how: ["Be hesitant about cost", "\"I don't want to spend money on something that didn't work before\"", "Agent should use £40 credits as risk-free re-trial"],
+        data: { "Orders/mo": 340, "GBS": "£1,400", "Feed rank": 42, "Ads": "Churned", "Credits": "£40 (exp 1 May)", "Support": 1 }},
+      sc27: { segment: "hidden_gem", churned: "active", ads_exp: "new_to_ads", pitch: "ads_and_offers",
+        desc: "Same as #4 but with 25% marketplace fee instead of 30%. Tests whether menu math adjusts correctly.",
+        how: ["If agent does menu math, verify they say \"twenty-five percent\" not \"thirty percent\"", "Otherwise same as #4"],
+        data: { "Orders/mo": 350, "GBS": "£1,500", "Feed rank": 45, "Ads": "Never Used", "MPF": "25%", "Cuisine": "French", "Support": 0 }},
+      sc28: { segment: "turnaround", churned: "active", ads_exp: "new_to_ads", pitch: "ads_and_offers",
+        desc: "Very low volume (50 orders), terrible metrics, AND 6 recent support cases. Tests empathy-first approach before any pitch.",
+        how: ["Be upset — \"We've had nothing but problems with Uber Eats\"", "Mention late deliveries, wrong orders, poor support", "Agent MUST acknowledge and empathise before pitching", "If they jump straight to ads, that's a fail"],
+        data: { "Orders/mo": 50, "GBS": "£650", "Feed rank": 78, "Rating": "3.2", "Photos": "25%", "Support": "6 cases" }},
     };
 
-    for (const [groupName, keys] of Object.entries(groups)) {
-      const og = document.createElement('optgroup');
-      og.label = groupName;
-      for (const k of keys) {
+    const groupDefs = [
+      { name: "Group A: Ads & Offers", keys: ["sc01","sc02","sc03","sc04","sc05","sc06","sc07","sc08","sc09"] },
+      { name: "Group B: Ads Only", keys: ["sc10","sc11","sc12","sc13","sc14","sc15","sc16","sc17","sc18"] },
+      { name: "Group C: Offers Only", keys: ["sc19","sc20","sc21"] },
+      { name: "Group D: Upsell / Optimise", keys: ["sc22","sc23","sc24"] },
+      { name: "Group E: Edge Cases", keys: ["sc25","sc26","sc27","sc28"] },
+    ];
+
+    const pitchTags = {
+      ads_and_offers: { label: "Ads & Offers", cls: "tag-ao" },
+      ads_only: { label: "Ads Only", cls: "tag-ads" },
+      offers_only: { label: "Offers Only", cls: "tag-offers" },
+      upsell_optimise: { label: "Upsell", cls: "tag-upsell" },
+    };
+
+    const pitchBadge = { ads_and_offers: "badge-green", ads_only: "badge-amber", offers_only: "badge-blue", upsell_optimise: "badge-purple" };
+    const churnedBadge = { active: "badge-green", churned: "badge-red" };
+
+    // Build dropdown
+    const menu = document.getElementById('dropdownMenu');
+    for (const g of groupDefs) {
+      const gh = document.createElement('div');
+      gh.className = 'dropdown-group';
+      gh.textContent = g.name;
+      menu.appendChild(gh);
+      for (const k of g.keys) {
         if (!scenarios[k]) continue;
-        const opt = document.createElement('option');
-        opt.value = k;
-        opt.textContent = scenarios[k].label;
-        og.appendChild(opt);
+        const m = meta[k];
+        const tag = pitchTags[m.pitch] || { label: "Edge", cls: "tag-edge" };
+        const item = document.createElement('div');
+        item.className = 'dropdown-item';
+        item.dataset.key = k;
+        item.innerHTML = `<span class="check"></span><span class="name">${scenarios[k].label}</span><span class="tag ${tag.cls}">${tag.label}</span>`;
+        item.addEventListener('click', () => selectScenario(k));
+        menu.appendChild(item);
       }
-      sel.appendChild(og);
     }
 
-    function loadScenario(key) {
+    let currentKey = 'sc01';
+    let dropdownOpen = false;
+
+    function toggleDropdown() {
+      dropdownOpen = !dropdownOpen;
+      document.getElementById('dropdownTrigger').classList.toggle('open', dropdownOpen);
+      document.getElementById('dropdownMenu').classList.toggle('open', dropdownOpen);
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.dropdown') && dropdownOpen) toggleDropdown();
+    });
+
+    function selectScenario(key) {
+      currentKey = key;
       const s = scenarios[key];
-      if (!s) return;
-      const m = s.merchant;
-      descEl.textContent = s.desc;
-      document.getElementById('f_contact').value = m.daily_contact_name || '';
-      document.getElementById('f_store').value = m.store_name || '';
-      document.getElementById('f_city').value = m.city_name__c || '';
-      document.getElementById('f_status').value = m.status || '';
-      document.getElementById('f_orders').value = m.orders_last_month ?? '';
-      document.getElementById('f_gbs').value = m.gbs_usd_last_month ?? '';
-      document.getElementById('f_roas').value = m.roas ?? '';
-      document.getElementById('f_rank').value = m.avg_organic_feed_rank ?? '';
-      document.getElementById('f_ads').value = m.has_run_ads || '';
-      document.getElementById('f_ads_status').value = m.ads_status || '';
-      document.getElementById('f_credits').value = m.uem_credits_outstanding ?? '';
-      document.getElementById('f_expiry').value = m.credits_expiration_date || '';
-      document.getElementById('f_photo').value = m.photo_coverage ?? '';
-      document.getElementById('f_online').value = m.online_rate_28d ?? '';
-      document.getElementById('f_cuisine').value = m.cuisine_type || '';
-      document.getElementById('f_fee').value = m.eats_marketplace_fee ?? '';
+      const m = meta[key];
+      if (!s || !m) return;
+
+      // Update trigger
+      document.getElementById('triggerText').textContent = s.label;
+      if (dropdownOpen) toggleDropdown();
+
+      // Update checkmarks
+      menu.querySelectorAll('.dropdown-item').forEach(el => {
+        el.classList.toggle('selected', el.dataset.key === key);
+        el.querySelector('.check').textContent = el.dataset.key === key ? '✓' : '';
+      });
+
+      // Update detail panel
+      const panel = document.getElementById('detailPanel');
+      panel.classList.add('visible');
+
+      // Badges
+      const badgesEl = document.getElementById('badges');
+      badgesEl.innerHTML = `
+        <span class="badge badge-grey">${m.segment}</span>
+        <span class="badge ${churnedBadge[m.churned] || 'badge-grey'}">${m.churned}</span>
+        <span class="badge badge-amber">${m.ads_exp}</span>
+        <span class="badge ${pitchBadge[m.pitch] || 'badge-grey'}">${m.pitch}</span>
+      `;
+
+      // Description
+      document.getElementById('detailDesc').textContent = m.desc;
+
+      // How to test
+      const howEl = document.getElementById('detailHow');
+      howEl.innerHTML = m.how.map(h => `<li>${h}</li>`).join('');
+
+      // Data grid
+      const dataEl = document.getElementById('detailData');
+      dataEl.innerHTML = Object.entries(m.data).map(([k, v]) =>
+        `<div class="data-item"><span class="data-label">${k}: </span><span class="data-value">${v}</span></div>`
+      ).join('');
+
+      // Update form fields
+      const mr = s.merchant;
+      const merch = Array.isArray(mr) ? mr[0] : mr;
+      document.getElementById('f_contact').value = merch.daily_contact_name || '';
+      document.getElementById('f_store').value = merch.store_name || '';
+      document.getElementById('f_city').value = merch.city_name__c || '';
+      document.getElementById('f_status').value = merch.status || '';
+      document.getElementById('f_orders').value = merch.orders_last_month ?? '';
+      document.getElementById('f_gbs').value = merch.gbs_usd_last_month ?? '';
+      document.getElementById('f_roas').value = merch.roas ?? '';
+      document.getElementById('f_rank').value = merch.avg_organic_feed_rank ?? '';
+      document.getElementById('f_ads').value = merch.has_run_ads || '';
+      document.getElementById('f_ads_status').value = merch.ads_status || '';
+      document.getElementById('f_credits').value = merch.uem_credits_outstanding ?? '';
+      document.getElementById('f_expiry').value = merch.credits_expiration_date || '';
+      document.getElementById('f_photo').value = merch.photo_coverage ?? '';
+      document.getElementById('f_online').value = merch.online_rate_28d ?? '';
+      document.getElementById('f_cuisine').value = merch.cuisine_type || '';
+      document.getElementById('f_fee').value = merch.eats_marketplace_fee ?? '';
     }
 
-    sel.addEventListener('change', () => loadScenario(sel.value));
-    loadScenario('sc01');
+    selectScenario('sc01');
 
+    // Form submit
     const form = document.getElementById('callForm');
     const btn = document.getElementById('submitBtn');
     const result = document.getElementById('result');
@@ -237,12 +500,10 @@
       result.className = 'result';
       result.style.display = 'none';
 
-      const key = sel.value;
-      const s = scenarios[key];
+      const s = scenarios[currentKey];
       const phone = document.getElementById('f_phone').value;
-
-      // Build merchant from scenario data + form overrides
-      const merchant = { ...s.merchant };
+      const srcMerchant = Array.isArray(s.merchant) ? s.merchant[0] : s.merchant;
+      const merchant = { ...srcMerchant };
       merchant.store_name = document.getElementById('f_store').value;
       merchant.daily_contact_name = document.getElementById('f_contact').value;
       merchant.primary_contact_phone = phone.replace(/\s/g, '').replace(/^\+/, '');
