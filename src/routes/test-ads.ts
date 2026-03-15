@@ -20,12 +20,22 @@ testAdsRouter.post('/', async (req: Request, res: Response) => {
     return;
   }
 
-  // Sanitize phone
-  if (body.merchant.primary_contact_phone) {
-    body.merchant.primary_contact_phone = body.merchant.primary_contact_phone.replace(/\s/g, '').replace(/^\+/, '');
+  // Handle both array and object merchant formats
+  let merchant = body.merchant;
+  if (Array.isArray(merchant)) {
+    merchant = merchant[0];
+    if (!merchant) {
+      res.status(400).json({ error: 'Empty merchant array' });
+      return;
+    }
   }
 
-  const payload = { merchant: body.merchant };
+  // Sanitize phone
+  if (merchant.primary_contact_phone) {
+    merchant.primary_contact_phone = merchant.primary_contact_phone.replace(/\s/g, '').replace(/^\+/, '');
+  }
+
+  const payload = { merchant: Array.isArray(body.merchant) ? [merchant] : merchant };
 
   try {
     const response = await fetch(ADS_WEBHOOK_URL, {
