@@ -36,6 +36,12 @@
     .footer { padding: 24px; font-size: 12px; color: #aaa; text-align: center; }
     .row { display: flex; gap: 12px; }
     .row .field { flex: 1; }
+    .tabs { display: flex; gap: 0; margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+    .tab { flex: 1; padding: 10px 6px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; background: #f5f5f5; color: #666; transition: all 0.2s; border-right: 1px solid #ddd; }
+    .tab:last-child { border-right: none; }
+    .tab.active { background: #06C167; color: #fff; }
+    .tab:hover:not(.active) { background: #eee; }
+    .scenario-desc { font-size: 13px; color: #888; margin-bottom: 16px; padding: 10px; background: #f9f9f9; border-radius: 6px; line-height: 1.4; }
   </style>
 </head>
 <body>
@@ -47,38 +53,70 @@
   </div>
 
   <h1>Churn Recovery</h1>
-  <p class="subtitle">Enter your phone number and receive a test call from the Churn agent</p>
+  <p class="subtitle">Select a scenario and receive a test call from the Churn agent</p>
 
   <div class="card">
+
+    <div class="tabs">
+      <div class="tab active" data-scenario="compliance">Compliance</div>
+      <div class="tab" data-scenario="engagement">Engagement</div>
+      <div class="tab" data-scenario="quality">Quality</div>
+      <div class="tab" data-scenario="low_sales">Low Sales</div>
+    </div>
+
+    <div class="scenario-desc" id="scenarioDesc">KYC rejected — expired ID document. Store is invisible. Agent should help the merchant understand what document to resubmit.</div>
+
     <form id="callForm">
 
       <div class="field field-phone">
         <label>Merchant phone number</label>
-        <input type="tel" name="merchant_phone_number" value="+34666777888" required>
+        <input type="tel" id="f_phone" name="merchant_phone_number" value="+34666777888" required>
       </div>
 
       <hr class="divider">
 
       <div class="field">
         <label>Store name</label>
-        <input type="text" name="store_name" value="Koala Pizza 24/24 7/7 - St-Jean-du-Cardonnay">
+        <input type="text" id="f_store" name="store_name" value="Compliance Kitchen - Paris 11">
       </div>
 
       <div class="row">
         <div class="field">
+          <label>Churn cluster</label>
+          <select id="f_cluster" name="churn_cluster">
+            <option value="Compliance" selected>Compliance</option>
+            <option value="Engagement">Engagement</option>
+            <option value="Quality">Quality</option>
+            <option value="Low sales">Low sales</option>
+          </select>
+        </div>
+        <div class="field">
           <label>Onboarding status</label>
-          <select name="onboarding_status">
+          <select id="f_onboarding" name="onboarding_status">
             <option value="activated" selected>activated</option>
             <option value="onboarding">onboarding</option>
             <option value="paused">paused</option>
             <option value="lost">lost</option>
           </select>
         </div>
+      </div>
+
+      <div class="row">
         <div class="field">
           <label>Is visible</label>
-          <select name="is_visible">
-            <option value="TRUE" selected>TRUE</option>
-            <option value="FALSE">FALSE</option>
+          <select id="f_visible" name="is_visible">
+            <option value="TRUE">TRUE</option>
+            <option value="FALSE" selected>FALSE</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Latest KYC status</label>
+          <select id="f_kyc" name="latest_kyc_status">
+            <option value="OPEN">OPEN</option>
+            <option value="PASS">PASS</option>
+            <option value="PENDING">PENDING</option>
+            <option value="FAIL">FAIL</option>
+            <option value="REJECTED" selected>REJECTED</option>
           </select>
         </div>
       </div>
@@ -92,68 +130,56 @@
         <div class="section-label">Identification</div>
         <div class="field">
           <label>Restaurant UUID</label>
-          <input type="text" name="restaurant_uuid" value="46629a95-61cd-536c-8582-0d1577c14cfc">
+          <input type="text" id="f_uuid" name="restaurant_uuid" value="a1b2c3d4-0001-4aaa-8888-111111111111">
         </div>
 
         <div class="section-label">Activity / Engagement</div>
         <div class="row">
           <div class="field">
             <label>Last trip date</label>
-            <input type="text" name="last_trip_dt" value="2026-03-06 0:00:00">
+            <input type="text" id="f_trip" name="last_trip_dt" value="2026-02-28 0:00:00">
           </div>
           <div class="field">
             <label>Last connected</label>
-            <input type="text" name="last_connected" value="2026-03-13 5:00:00">
+            <input type="text" id="f_connected" name="last_connected" value="2026-03-12 18:30:00">
           </div>
         </div>
         <div class="row">
           <div class="field">
             <label>L7D ROR</label>
-            <input type="text" name="l7d_ror" value="1">
+            <input type="text" id="f_l7d" name="l7d_ror" value="0.82">
           </div>
           <div class="field">
             <label>L14D ROR</label>
-            <input type="text" name="l14d_ror" value="1">
+            <input type="text" id="f_l14d" name="l14d_ror" value="0.79">
           </div>
         </div>
         <div class="field">
           <label>First visible timestamp</label>
-          <input type="text" name="first_visible_timestamp_local" value="2024-02-06 16:27:15">
+          <input type="text" id="f_first_visible" name="first_visible_timestamp_local" value="2023-09-14 10:00:00">
         </div>
 
         <div class="section-label">Compliance (KYC / KYB)</div>
-        <div class="row">
-          <div class="field">
-            <label>Latest KYC status</label>
-            <select name="latest_kyc_status">
-              <option value="OPEN" selected>OPEN</option>
-              <option value="PASS">PASS</option>
-              <option value="PENDING">PENDING</option>
-              <option value="FAIL">FAIL</option>
-              <option value="REJECTED">REJECTED</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Latest KYB status</label>
-            <select name="latest_kyb_status">
-              <option value="Pass" selected>Pass</option>
-              <option value="Fail">Fail</option>
-              <option value="Pending">Pending</option>
-              <option value="In Review">In Review</option>
-            </select>
-          </div>
+        <div class="field">
+          <label>Latest KYB status</label>
+          <select id="f_kyb" name="latest_kyb_status">
+            <option value="Pass" selected>Pass</option>
+            <option value="Fail">Fail</option>
+            <option value="Pending">Pending</option>
+            <option value="In Review">In Review</option>
+          </select>
         </div>
         <div class="row">
           <div class="field">
             <label>ID documents approved</label>
-            <select name="id_documents_approved">
-              <option value="TRUE" selected>TRUE</option>
-              <option value="FALSE">FALSE</option>
+            <select id="f_id_docs" name="id_documents_approved">
+              <option value="TRUE">TRUE</option>
+              <option value="FALSE" selected>FALSE</option>
             </select>
           </div>
           <div class="field">
             <label>Verified by ops</label>
-            <select name="verified_by_ops">
+            <select id="f_verified" name="verified_by_ops">
               <option value="Verified">Verified</option>
               <option value="Unverified" selected>Unverified</option>
               <option value="Pending Review">Pending Review</option>
@@ -162,41 +188,41 @@
         </div>
         <div class="field">
           <label>KYC rejection reason</label>
-          <input type="text" name="kyc_rejection_reason" value="">
+          <input type="text" id="f_kyc_reason" name="kyc_rejection_reason" value="Document expired — ID card validity date passed">
         </div>
         <div class="field">
           <label>KYB notes</label>
-          <input type="text" name="kyb_notes" value="">
+          <input type="text" id="f_kyb_notes" name="kyb_notes" value="">
         </div>
         <div class="field">
           <label>KYB sent timestamp</label>
-          <input type="text" name="kyb_sent_timestamp" value="2024-02-01 15:13:14">
+          <input type="text" id="f_kyb_sent" name="kyb_sent_timestamp" value="2023-09-01 09:00:00">
         </div>
 
         <div class="section-label">Menu Quality</div>
         <div class="row">
           <div class="field">
             <label>Total items</label>
-            <input type="text" name="total_items" value="10">
+            <input type="text" id="f_items" name="total_items" value="22">
           </div>
           <div class="field">
             <label>Photo coverage (0-1)</label>
-            <input type="text" name="photo_coverage" value="1">
+            <input type="text" id="f_photo" name="photo_coverage" value="0.86">
           </div>
         </div>
         <div class="field">
           <label>Description coverage (0-1)</label>
-          <input type="text" name="description_coverage" value="1">
+          <input type="text" id="f_desc" name="description_coverage" value="0.91">
         </div>
 
         <div class="section-label">Cancellation & Operations</div>
         <div class="field">
           <label>MCFR (cancellation rate)</label>
-          <input type="text" name="mcfr" value="0">
+          <input type="text" id="f_mcfr" name="mcfr" value="0.03">
         </div>
         <div class="field">
           <label>Opening hours</label>
-          <input type="text" name="opening_hours" value="Mon-Sun: 00:00 - 23:59">
+          <input type="text" id="f_hours" name="opening_hours" value="Mon-Sun: 11:30 - 23:00">
         </div>
 
       </div>
@@ -210,6 +236,118 @@
   <div class="footer">Uber Eats Churn Recovery &mdash; Internal Testing Tool</div>
 
   <script>
+    const scenarios = {
+      compliance: {
+        desc: "KYC rejected — expired ID document. Store is invisible. Agent should help the merchant understand what document to resubmit.",
+        store_name: "Compliance Kitchen - Paris 11",
+        restaurant_uuid: "a1b2c3d4-0001-4aaa-8888-111111111111",
+        onboarding_status: "activated",
+        first_visible_timestamp_local: "2023-09-14 10:00:00",
+        is_visible: "FALSE",
+        last_trip_dt: "2026-02-28 0:00:00",
+        l7d_ror: "0.82", l14d_ror: "0.79",
+        last_connected: "2026-03-12 18:30:00",
+        latest_kyc_status: "REJECTED", latest_kyb_status: "Pass",
+        kyb_notes: "", kyc_rejection_reason: "Document expired — ID card validity date passed",
+        kyb_sent_timestamp: "2023-09-01 09:00:00",
+        id_documents_approved: "FALSE", verified_by_ops: "Unverified",
+        total_items: "22", photo_coverage: "0.86", description_coverage: "0.91",
+        mcfr: "0.03", opening_hours: "Mon-Sun: 11:30 - 23:00",
+        churn_cluster: "Compliance"
+      },
+      engagement: {
+        desc: "Store is visible and compliant but activity dropped sharply — L7D ROR at 0.21 vs L14D at 0.67. Agent should diagnose why engagement fell and re-activate the merchant.",
+        store_name: "Engagement Tacos - Lyon 6",
+        restaurant_uuid: "b2c3d4e5-0002-4bbb-9999-222222222222",
+        onboarding_status: "activated",
+        first_visible_timestamp_local: "2024-05-20 14:00:00",
+        is_visible: "TRUE",
+        last_trip_dt: "2026-03-09 0:00:00",
+        l7d_ror: "0.21", l14d_ror: "0.67",
+        last_connected: "2026-03-11 07:45:00",
+        latest_kyc_status: "PASS", latest_kyb_status: "Pass",
+        kyb_notes: "", kyc_rejection_reason: "",
+        kyb_sent_timestamp: "2024-05-10 11:00:00",
+        id_documents_approved: "TRUE", verified_by_ops: "Verified",
+        total_items: "18", photo_coverage: "0.72", description_coverage: "0.78",
+        mcfr: "0.08", opening_hours: "Tue-Sun: 12:00 - 22:30",
+        churn_cluster: "Engagement"
+      },
+      quality: {
+        desc: "Low photo and description coverage (29% / 35%) plus high cancellation rate (19%). Agent should address menu quality issues and help reduce cancellations.",
+        store_name: "Quality Sushi - Bordeaux Centre",
+        restaurant_uuid: "c3d4e5f6-0003-4ccc-aaaa-333333333333",
+        onboarding_status: "activated",
+        first_visible_timestamp_local: "2024-11-03 09:30:00",
+        is_visible: "TRUE",
+        last_trip_dt: "2026-03-11 0:00:00",
+        l7d_ror: "0.74", l14d_ror: "0.71",
+        last_connected: "2026-03-13 08:00:00",
+        latest_kyc_status: "PASS", latest_kyb_status: "Pass",
+        kyb_notes: "", kyc_rejection_reason: "",
+        kyb_sent_timestamp: "2024-10-25 10:00:00",
+        id_documents_approved: "TRUE", verified_by_ops: "Verified",
+        total_items: "31", photo_coverage: "0.29", description_coverage: "0.35",
+        mcfr: "0.19", opening_hours: "Mon-Sat: 11:00 - 14:30, 18:00 - 22:00",
+        churn_cluster: "Quality"
+      },
+      low_sales: {
+        desc: "Store is compliant and online but orders are very low. Good menu quality (93% photos). Agent should explore what's blocking growth and offer actionable tips.",
+        store_name: "Low Sales Pizza - Marseille 2",
+        restaurant_uuid: "d4e5f6a7-0004-4ddd-bbbb-444444444444",
+        onboarding_status: "activated",
+        first_visible_timestamp_local: "2025-01-15 12:00:00",
+        is_visible: "TRUE",
+        last_trip_dt: "2026-03-06 0:00:00",
+        l7d_ror: "0.88", l14d_ror: "0.85",
+        last_connected: "2026-03-13 11:00:00",
+        latest_kyc_status: "PASS", latest_kyb_status: "Pass",
+        kyb_notes: "", kyc_rejection_reason: "",
+        kyb_sent_timestamp: "2025-01-08 09:00:00",
+        id_documents_approved: "TRUE", verified_by_ops: "Verified",
+        total_items: "14", photo_coverage: "0.93", description_coverage: "0.86",
+        mcfr: "0.04", opening_hours: "Wed-Mon: 11:30 - 14:00, 18:30 - 22:30",
+        churn_cluster: "Low sales"
+      }
+    };
+
+    function setSelect(id, val) {
+      const el = document.getElementById(id);
+      for (let o of el.options) { if (o.value === val) { o.selected = true; break; } }
+    }
+
+    function loadScenario(key) {
+      const s = scenarios[key];
+      document.getElementById('scenarioDesc').textContent = s.desc;
+      document.getElementById('f_store').value = s.store_name;
+      document.getElementById('f_uuid').value = s.restaurant_uuid;
+      document.getElementById('f_trip').value = s.last_trip_dt;
+      document.getElementById('f_connected').value = s.last_connected;
+      document.getElementById('f_l7d').value = s.l7d_ror;
+      document.getElementById('f_l14d').value = s.l14d_ror;
+      document.getElementById('f_first_visible').value = s.first_visible_timestamp_local;
+      document.getElementById('f_kyc_reason').value = s.kyc_rejection_reason;
+      document.getElementById('f_kyb_notes').value = s.kyb_notes;
+      document.getElementById('f_kyb_sent').value = s.kyb_sent_timestamp;
+      document.getElementById('f_items').value = s.total_items;
+      document.getElementById('f_photo').value = s.photo_coverage;
+      document.getElementById('f_desc').value = s.description_coverage;
+      document.getElementById('f_mcfr').value = s.mcfr;
+      document.getElementById('f_hours').value = s.opening_hours;
+      setSelect('f_cluster', s.churn_cluster);
+      setSelect('f_onboarding', s.onboarding_status);
+      setSelect('f_visible', s.is_visible);
+      setSelect('f_kyc', s.latest_kyc_status);
+      setSelect('f_kyb', s.latest_kyb_status);
+      setSelect('f_id_docs', s.id_documents_approved);
+      setSelect('f_verified', s.verified_by_ops);
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.scenario === key));
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => loadScenario(tab.dataset.scenario));
+    });
+
     const form = document.getElementById('callForm');
     const btn = document.getElementById('submitBtn');
     const result = document.getElementById('result');
@@ -247,6 +385,7 @@
         description_coverage: fd.description_coverage || '',
         mcfr: fd.mcfr || '',
         opening_hours: fd.opening_hours || '',
+        churn_cluster: fd.churn_cluster || '',
       };
 
       try {
